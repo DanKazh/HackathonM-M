@@ -1,23 +1,22 @@
 services:
-  web:
-    build: .
-    ports:
-      - "8000:8000"
-    depends_on:
-      - db
-    environment:
-      - DATABASE_URL=postgresql://postgres:postgres@db:5432/auth_db
-      - LOG_LEVEL=WARNING
-    volumes:
-      - .:/app
-    networks:
-      - net
+  # web:
+  #   build: .
+  #   ports:
+  #     - "8000:8000"
+  #   depends_on:
+  #     - db
+  #   environment:
+  #     - DATABASE_URL=postgresql://postgres:postgres@db:5432/auth_db
+  #     - LOG_LEVEL=WARNING
+  #   volumes:
+  #     - .:/app
+  #   networks:
+  #     - net
 
   db:
-    image: postgres:17
+    image: postgres:latest
     env_file:
       - .env
-    container_name: postgres
     environment:
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASS}
