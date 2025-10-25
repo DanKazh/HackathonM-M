@@ -33,23 +33,29 @@ function ObservationTable({ onCalculate }) {
                 </tr>
               </thead>
               <tbody>
-                {observations.map((obs, index) => (
-                  <tr key={obs.id}>
-                    <td>{index + 1}</td>
-                    <td>{formatDateTime(obs.date)}</td>
-                    <td>{formatNumber(obs.ra)}</td>
-                    <td>{formatNumber(obs.dec)}</td>
-                    <td>
-                      <Button
-                        variant="danger"
-                        className="btn-small"
-                        onClick={() => removeObservation(obs.id)}
-                      >
-                        Удалить
-                      </Button>
-                    </td>
-                  </tr>
-                ))}
+                {observations.map((obs, index) => {
+                  const ra = parseFloat(obs.ra);
+                  const dec = parseFloat(obs.dec);
+                  
+                  return (
+                    <tr key={obs.id}>
+                      <td>{index + 1}</td>
+                      <td>{formatDateTime(obs.date)}</td>
+                      <td>{isNaN(ra) ? obs.ra : ra.toFixed(4)}</td>
+                      <td>{isNaN(dec) ? obs.dec : dec.toFixed(4)}</td>
+                      <td>
+                        <Button
+                          variant="danger"
+                          className="btn-small"
+                          onClick={() => removeObservation(obs.id)}
+                        >
+                          Удалить
+                        </Button>
+                      </td>
+                    </tr>
+                  );
+                })}
+
               </tbody>
             </table>
           </div>
