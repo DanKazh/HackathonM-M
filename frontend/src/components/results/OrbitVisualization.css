@@ -1,0 +1,32 @@
+.orbit-visualization {
+  background: linear-gradient(135deg, #0c1445 0%, #1a237e 100%);
+  border-radius: 10px;
+  height: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  margin: 20px 0;
+  border: 2px solid #3949ab;
+}
+
+.visualization-content {
+  text-align: center;
+}
+
+.icon {
+  font-size: 3rem;
+  margin-bottom: 15px;
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+.hint {
+  font-size: 0.9rem;
+  opacity: 0.8;
+  margin-top: 10px;
+}

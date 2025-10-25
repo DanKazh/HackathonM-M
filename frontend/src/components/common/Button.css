@@ -1,0 +1,6 @@
+.btn { background: #3949ab; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: 600; }
+.btn:hover { background: #283593; }
+.btn-secondary { background: #757575; }
+.btn-success { background: #43a047; }
+.btn-danger { background: #e53935; }
+.btn-small { padding: 5px 10px; font-size: 12px; }
