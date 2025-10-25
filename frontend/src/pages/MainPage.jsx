@@ -11,16 +11,24 @@ import './MainPage.css';
 
 function MainPage() {
   const { observations } = useObservations();
-  const { loading, orbitData, closeApproachData } = useOrbitCalculation();
+  const { loading, orbitData, closeApproachData, updateOrbitData, setLoading } = useOrbitCalculation();
   const [status, setStatus] = useState(null);
 
   const handleCalculate = async (observations) => {
     try {
+      setLoading(true);
       setStatus({ message: 'Выполняется расчет орбиты...', type: 'info' });
+
       const result = await calculateOrbit(observations);
+
+      updateOrbitData(result);
+
       setStatus({ message: 'Расчет орбиты завершен!', type: 'success' });
     } catch (error) {
       setStatus({ message: 'Ошибка при расчете орбиты', type: 'error' });
+      console.error('Calculation error:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
