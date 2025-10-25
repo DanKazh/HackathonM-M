@@ -27,3 +27,27 @@ async def root():
 @app.get("/health")
 async def health():
     return {"status": "ok"}
+
+# Простая тестовая ручка
+@app.get("/api/results")
+async def get_results():
+    return {
+        "summary": {
+            "total_observation_sets": 0,
+            "total_observations": 0,
+            "total_orbit_calculations": 0,
+            "total_close_approaches": 0
+        },
+        "observation_sets": []
+    }
+
+@app.get("/api/results/set/{set_id}")
+async def get_results_for_set(set_id: int):
+    return {
+        "id": set_id,
+        "name": "Тестовый набор",
+        "description": "Тестовое описание",
+        "created_at": "2024-01-15T20:35:00",
+        "observation_count": 5,
+        "status": "calculated"
+    }

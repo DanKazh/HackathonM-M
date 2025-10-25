@@ -1,0 +1,4 @@
+.status-message { padding: 15px; border-radius: 8px; margin: 10px 0; display: flex; justify-content: space-between; font-weight: 600; }
+.status-success { background: #e8f5e8; color: #2e7d32; border: 1px solid #c8e6c9; }
+.status-error { background: #ffebee; color: #c62828; border: 1px solid #ffcdd2; }
+.status-info { background: #e3f2fd; color: #1565c0; border: 1px solid #bbdefb; }
