@@ -1,64 +1,59 @@
 from typing import List
 from models.schemas import ObservationPoint, CloseApproachResponse
 import uuid
+from orbital_core.calculator.orbitDetermination import OrbitDetermination
+from datetime import datetime
+import numpy as np
+
 
 class OrbitCalculationService:
     def __init__(self):
-        # В реальном приложении здесь была бы инициализация
-        # соединения с сервисом другого разработчика
-        pass
+        # Инициализируем сервис определения орбиты
+        self.orbit_determination = OrbitDetermination()
     
     async def calculate_min_distance(self, observations: List[ObservationPoint]) -> CloseApproachResponse:
         """
-        Вызывает функцию другого разработчика для расчета минимального расстояния
+        Вызывает функцию расчета минимального расстояния через OrbitDetermination
         """
         try:
-            # Здесь вызывается функция другого разработчика
-            # Для демонстрации используем заглушку
+            # Преобразуем наблюдения в формат, ожидаемый OrbitDetermination
+            for obs in observations:
+                # Преобразуем RA из градусов в часы (1 час = 15 градусов)
+                ra_hours = obs.ra_degrees / 15.0
+                self.orbit_determination.add_observation(
+                    obs.timestamp.strftime('%Y-%m-%d %H:%M:%S'),
+                    ra_hours,
+                    obs.dec_degrees
+                )
             
-            # Преобразуем наблюдения в формат, ожидаемый внешней функцией
-            observation_data = [
-                {
-                    'timestamp': obs.timestamp,
-                    'ra': obs.ra_degrees,
-                    'dec': obs.dec_degrees
-                }
-                for obs in observations
-            ]
+            # Вызываем расчет орбиты
+            orbital_elements = self.orbit_determination.gauss_method_corrected()
             
-            # В реальном приложении здесь будет вызов:
-            # result = external_calculator.calculate_min_earth_distance(observation_data)
+            if orbital_elements is None:
+                raise ValueError("Не удалось определить орбиту")
             
-            # Заглушка с реалистичными данными
-            result = self._simulate_external_calculation(observation_data)
+            # Рассчитываем минимальное расстояние и время сближения
+            min_distance_result = self.orbit_determination.calculate_min_earth_distance(
+                orbital_elements
+            )
             
             return CloseApproachResponse(
-                min_distance_km=result['min_distance_km'],
-                min_distance_au=result['min_distance_au'],
-                closest_approach_time=result['closest_approach_time'],
+                min_distance_km=min_distance_result['min_distance_km'],
+                min_distance_au=min_distance_result['min_distance_au'],
+                closest_approach_time=min_distance_result['closest_approach_time'],
                 calculation_id=str(uuid.uuid4())
             )
             
         except Exception as e:
             raise ValueError(f"Ошибка при расчете орбиты: {str(e)}")
     
-    def _simulate_external_calculation(self, observations: List[dict]) -> dict:
+    def _simulate_external_calculation(self, observation_data):
         """
-        Заглушка для функции расчета другого разработчика
-        В реальном приложении этот метод будет удален
+        Заглушка для обратной совместимости
         """
-        # Имитация сложных вычислений
-        min_distance_km = 384400 + len(observations) * 1000  # ~расстояние до Луны + вариация
-        min_distance_au = min_distance_km / 149597870.7  # 1 а.е. в км
-        
-        # Ближайшее сближение через 30-60 дней от последнего наблюдения
-        last_obs_time = max(obs['timestamp'] for obs in observations)
-        from datetime import timedelta
-        import random
-        closest_approach_time = last_obs_time + timedelta(days=30 + random.random() * 30)
-        
+        # Для демонстрационных целей
         return {
-            'min_distance_km': round(min_distance_km, 2),
-            'min_distance_au': round(min_distance_au, 6),
-            'closest_approach_time': closest_approach_time
+            'min_distance_km': 1234567.89,
+            'min_distance_au': 0.008256,
+            'closest_approach_time': datetime.now()
         }
