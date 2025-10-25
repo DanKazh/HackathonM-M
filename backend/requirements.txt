@@ -11,4 +11,8 @@ aiohttp
 python-dateutil
 pytest
 pytest-cov
+
 httpx
+alembic
+sqlalchemy
+psycopg2-binary
