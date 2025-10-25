@@ -1,156 +1,70 @@
-from fastapi import APIRouter, HTTPException, status, Query
-from typing import List, Optional
-from datetime import datetime
-
-# Импорты схем
-from app.models.schemas import (
-    ResultsResponse,
-    ResultsSummary,
-    ObservationSetSummary,
-    OrbitCalculationResponse,
-    CloseApproachData,
-    ObservationSetResponse
-)
-
-# Импорты сервисов
-from app.service import ObservationService
-from app.service import OrbitService
+from fastapi import APIRouter, HTTPException, status
+from typing import List
+from app.models.schemas import ObservationRequest, CloseApproachResponse, ObservationPoint, ErrorResponse
+from app.service.front import OrbitCalculationService
 
 router = APIRouter()
+calculation_service = OrbitCalculationService()
 
-# Инициализация сервисов
-observation_service = ObservationService()
-orbit_service = OrbitService()
-
-@router.get(
-    "",
-    response_model=ResultsResponse,
-    summary="Получить сводку результатов",
-    description="Возвращает сводную информацию по всем наборам наблюдений и расчетам"
+@router.post(
+    "/calculate",
+    response_model=CloseApproachResponse,
+    summary="Рассчитать минимальное расстояние до Земли",
+    description="Принимает список наблюдений и возвращает минимальное расстояние до Земли и время сближения",
+    responses={
+        400: {"model": ErrorResponse, "description": "Неверный формат данных"},
+        500: {"model": ErrorResponse, "description": "Ошибка расчета"}
+    }
 )
-async def get_results(
-    include_observations: bool = Query(False, description="Включать детали наблюдений"),
-    limit: int = Query(10, ge=1, le=100, description="Лимит наборов"),
-    sort_by: str = Query("recent", description="Сортировка: recent, name, observations_count")
-):
+async def calculate_min_distance(request: ObservationRequest):
     try:
-        # Получаем все наборы наблюдений
-        observation_sets = await observation_service.get_all_observation_sets(0, limit)
+        # Валидация и преобразование входных данных
+        observations = await _validate_and_convert_observations(request.observations)
         
-        # Сортируем наборы
-        if sort_by == "name":
-            observation_sets.sort(key=lambda x: x.name or "")
-        elif sort_by == "observations_count":
-            observation_sets.sort(key=lambda x: x.observation_count, reverse=True)
-        else:  # recent
-            observation_sets.sort(key=lambda x: x.created_at, reverse=True)
+        # Вызов сервиса для расчета
+        result = await calculation_service.calculate_min_distance(observations)
         
-        # Собираем сводную информацию для каждого набора
-        set_summaries = []
+        return result
         
-        for obs_set in observation_sets:
-            # Получаем последний расчет орбиты для этого набора
-            last_calculation = await orbit_service.get_latest_calculation(obs_set.id)
-            
-            # Получаем сближение для последнего расчета
-            close_approach = None
-            if last_calculation:
-                close_approach_data = await orbit_service.get_close_approach(last_calculation.id)
-                if close_approach_data:
-                    close_approach = close_approach_data.close_approach
-            
-            # Определяем статус набора
-            if obs_set.observation_count == 0:
-                status = "empty"
-            elif not last_calculation:
-                status = "observations_only"
-            else:
-                status = "calculated"
-            
-            summary = ObservationSetSummary(
-                id=obs_set.id,
-                name=obs_set.name,
-                description=obs_set.description,
-                created_at=obs_set.created_at,
-                observation_count=obs_set.observation_count,
-                last_calculation=last_calculation,
-                close_approach=close_approach,
-                status=status
-            )
-            set_summaries.append(summary)
-        
-        # Считаем общую статистику
-        total_observations = sum(obs_set.observation_count for obs_set in observation_sets)
-        total_calculations = len([s for s in set_summaries if s.last_calculation])
-        total_approaches = len([s for s in set_summaries if s.close_approach])
-        
-        results_summary = ResultsSummary(
-            total_observation_sets=len(observation_sets),
-            total_observations=total_observations,
-            total_orbit_calculations=total_calculations,
-            total_close_approaches=total_approaches
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e)
         )
-        
-        return ResultsResponse(
-            summary=results_summary,
-            observation_sets=set_summaries
-        )
-        
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Ошибка при получении результатов: {str(e)}"
+            detail=f"Внутренняя ошибка сервера: {str(e)}"
         )
 
-@router.get(
-    "/set/{set_id}",
-    response_model=ObservationSetSummary,
-    summary="Получить результаты для конкретного набора",
-    description="Возвращает детальную сводку по конкретному набору наблюдений"
-)
-async def get_results_for_set(set_id: int):
-    try:
-        # Получаем набор наблюдений
-        obs_set = await observation_service.get_observation_set(set_id)
-        if not obs_set:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail=f"Набор наблюдений с ID {set_id} не найден"
+async def _validate_and_convert_observations(observation_lists: List[List]) -> List[ObservationPoint]:
+    """
+    Валидирует и преобразует список списков в список ObservationPoint
+    """
+    if not observation_lists:
+        raise ValueError("Список наблюдений не может быть пустым")
+    
+    observations = []
+    
+    for i, obs_list in enumerate(observation_lists):
+        if len(obs_list) != 3:
+            raise ValueError(f"Наблюдение {i} должно содержать 3 элемента: timestamp, ra, dec")
+        
+        timestamp, ra, dec = obs_list
+        
+        # Создаем ObservationPoint (Pydantic сам выполнит валидацию)
+        try:
+            observation = ObservationPoint(
+                timestamp=timestamp,
+                ra_degrees=float(ra),
+                dec_degrees=float(dec)
             )
-        
-        # Получаем последний расчет орбиты
-        last_calculation = await orbit_service.get_latest_calculation(obs_set.id)
-        
-        # Получаем сближение
-        close_approach = None
-        if last_calculation:
-            close_approach_data = await orbit_service.get_close_approach(last_calculation.id)
-            if close_approach_data:
-                close_approach = close_approach_data.close_approach
-        
-        # Определяем статус
-        if obs_set.observation_count == 0:
-            status = "empty"
-        elif not last_calculation:
-            status = "observations_only"
-        else:
-            status = "calculated"
-        
-        return ObservationSetSummary(
-            id=obs_set.id,
-            name=obs_set.name,
-            description=obs_set.description,
-            created_at=obs_set.created_at,
-            observation_count=obs_set.observation_count,
-            last_calculation=last_calculation,
-            close_approach=close_approach,
-            status=status
-        )
-        
-    except HTTPException:
-        raise
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Ошибка при получении результатов для набора {set_id}: {str(e)}"
-        )
+            observations.append(observation)
+        except Exception as e:
+            raise ValueError(f"Неверный формат данных в наблюдении {i}: {str(e)}")
+    
+    # Проверяем, что есть хотя бы 3 наблюдения для расчета орбиты
+    if len(observations) < 3:
+        raise ValueError("Для расчета орбиты необходимо минимум 3 наблюдения")
+    
+    return observations
