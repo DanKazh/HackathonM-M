@@ -1,6 +1,5 @@
-from datetime import datetime
 from typing import List
-from app.models.schemas import ObservationPoint, CloseApproachResponse
+from models.schemas import ObservationPoint, CloseApproachResponse
 import uuid
 
 class OrbitCalculationService:

@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, status
 from typing import List
-from app.models.schemas import ObservationRequest, CloseApproachResponse, ObservationPoint, ErrorResponse
-from app.service.front import OrbitCalculationService
+from models.schemas import ObservationRequest, CloseApproachResponse, ObservationPoint, ErrorResponse
+from service.front import OrbitCalculationService
 
 router = APIRouter()
 calculation_service = OrbitCalculationService()
