@@ -1,4 +1,4 @@
-"""initial migration
+"""initial tables
 
 Revision ID: 001
 Revises: 
@@ -34,8 +34,8 @@ def upgrade() -> None:
         sa.Column('version', sa.Integer(), server_default=sa.text('1'), nullable=False),
         sa.Column('login', sa.Text(), nullable=False),
         sa.Column('password_hash', sa.LargeBinary(), nullable=False),
-        sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('current_timestamp'), nullable=True),
-        sa.Column('updated_at', sa.DateTime(timezone=True), server_default=sa.text('current_timestamp'), nullable=True),
+        sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=True),
+        sa.Column('updated_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=True),
         sa.PrimaryKeyConstraint('id'),
         sa.CheckConstraint('length(login) >= 6 AND length(login) <= 20', name='user_table_login_check'),
         sa.CheckConstraint('octet_length(password_hash) = 40', name='user_table_password_hash_check')
@@ -48,8 +48,8 @@ def upgrade() -> None:
         sa.Column('name', sa.String(length=100), nullable=True),
         sa.Column('description', sa.Text(), nullable=True),
         sa.Column('status', sa.String(length=20), server_default=sa.text("'active'"), nullable=True),
-        sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('current_timestamp'), nullable=True),
-        sa.Column('updated_at', sa.DateTime(timezone=True), server_default=sa.text('current_timestamp'), nullable=True),
+        sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=True),
+        sa.Column('updated_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=True),
         sa.PrimaryKeyConstraint('id'),
         sa.CheckConstraint("status IN ('active', 'processing', 'completed', 'error')", name='observation_groups_status_check')
     )
@@ -60,12 +60,12 @@ def upgrade() -> None:
         sa.Column('user_id', postgresql.UUID(), nullable=False),
         sa.Column('group_id', postgresql.UUID(), nullable=False),
         sa.Column('observation_time', sa.DateTime(timezone=True), nullable=False),
-        sa.Column('right_ascension', sa.DoublePrecision(), nullable=False),
-        sa.Column('declination', sa.DoublePrecision(), nullable=False),
+        sa.Column('right_ascension', sa.Double(), nullable=False),
+        sa.Column('declination', sa.Double(), nullable=False),
         sa.Column('observer_name', sa.String(length=100), nullable=True),
         sa.Column('observation_notes', sa.Text(), nullable=True),
         sa.Column('image_url', sa.String(length=500), nullable=True),
-        sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('current_timestamp'), nullable=True),
+        sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=True),
         sa.ForeignKeyConstraint(['group_id'], ['observation_groups.id'], ondelete='CASCADE'),
         sa.ForeignKeyConstraint(['user_id'], ['user_table.id'], ondelete='CASCADE'),
         sa.PrimaryKeyConstraint('id'),
@@ -77,13 +77,13 @@ def upgrade() -> None:
     op.create_table('orbital_parameters',
         sa.Column('id', postgresql.UUID(), server_default=sa.text('gen_random_uuid()'), nullable=False),
         sa.Column('group_id', postgresql.UUID(), nullable=False),
-        sa.Column('semi_major_axis', sa.DoublePrecision(), nullable=False),
-        sa.Column('eccentricity', sa.DoublePrecision(), nullable=False),
-        sa.Column('inclination', sa.DoublePrecision(), nullable=False),
-        sa.Column('longitude_ascending_node', sa.DoublePrecision(), nullable=False),
-        sa.Column('argument_perihelion', sa.DoublePrecision(), nullable=False),
+        sa.Column('semi_major_axis', sa.Double(), nullable=False),
+        sa.Column('eccentricity', sa.Double(), nullable=False),
+        sa.Column('inclination', sa.Double(), nullable=False),
+        sa.Column('longitude_ascending_node', sa.Double(), nullable=False),
+        sa.Column('argument_perihelion', sa.Double(), nullable=False),
         sa.Column('time_perihelion', sa.DateTime(timezone=True), nullable=False),
-        sa.Column('calculation_date', sa.DateTime(timezone=True), server_default=sa.text('current_timestamp'), nullable=True),
+        sa.Column('calculation_date', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=True),
         sa.Column('used_observations_count', sa.Integer(), nullable=False),
         sa.ForeignKeyConstraint(['group_id'], ['observation_groups.id'], ondelete='CASCADE'),
         sa.PrimaryKeyConstraint('id'),
@@ -99,16 +99,16 @@ def upgrade() -> None:
         sa.Column('group_id', postgresql.UUID(), nullable=False),
         sa.Column('orbital_parameters_id', postgresql.UUID(), nullable=False),
         sa.Column('approach_time', sa.DateTime(timezone=True), nullable=False),
-        sa.Column('distance_au', sa.DoublePrecision(), nullable=False),
-        sa.Column('distance_km', sa.DoublePrecision(), nullable=False),
-        sa.Column('calculation_date', sa.DateTime(timezone=True), server_default=sa.text('current_timestamp'), nullable=True),
+        sa.Column('distance_au', sa.Double(), nullable=False),
+        sa.Column('distance_km', sa.Double(), nullable=False),
+        sa.Column('calculation_date', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=True),
         sa.ForeignKeyConstraint(['group_id'], ['observation_groups.id'], ondelete='CASCADE'),
         sa.ForeignKeyConstraint(['orbital_parameters_id'], ['orbital_parameters.id'], ondelete='CASCADE'),
         sa.PrimaryKeyConstraint('id'),
         sa.CheckConstraint('distance_au > 0 AND distance_km > 0', name='positive_distance')
     )
     
-    # Триггеры для автоматического обновления updated_at
+    # Триггеры для обновления updated_at
     op.execute("""
         CREATE TRIGGER update_user_table_updated_at BEFORE UPDATE ON user_table
         FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
