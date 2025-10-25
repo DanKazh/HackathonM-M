@@ -1,5 +1,5 @@
 import { useState } from 'react';
-export function useOrbitCalculation() {
+export function useOrbitCalculation(observations) {
   const [loading, setLoading] = useState(false);
   const [orbitData, setOrbitData] = useState(null);
   const [closeApproachData, setCloseApproachData] = useState(null);
