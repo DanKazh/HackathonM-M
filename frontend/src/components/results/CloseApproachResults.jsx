@@ -2,7 +2,7 @@ import React from 'react';
 import Card from '../common/Card';
 import ResultCard from './ResultCard';
 import Button from '../common/Button';
-import { formatDateTime } from '../../utils/formatters';
+import { formatDateTime, formatDateFull, formatDate } from '../../utils/formatters';
 import './CloseApproachResults.css';
 
 function CloseApproachResults({ data, onSave, onExport }) {
@@ -13,7 +13,7 @@ function CloseApproachResults({ data, onSave, onExport }) {
       <div className="results-grid">
         <ResultCard
           label="Дата сближения"
-          value={data.date ? formatDateTime(data.date) : '-'}
+          value={data.date ? formatDate(data.date) : '-'}
         />
         <ResultCard
           label="Расстояние"

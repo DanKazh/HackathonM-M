@@ -22,14 +22,26 @@ function MainPage() {
 
   // Сохраняем наблюдения в localStorage при изменении
   useEffect(() => {
-    console.log('Observations changed, saving to localStorage:', observations);
     setStoredObservations(observations);
   }, [observations, setStoredObservations]);
 
-  // Добавим useEffect для отладки начальной загрузки
-  useEffect(() => {
-    console.log('Initial stored observations:', storedObservations);
-  }, []);
+  // Функция для преобразования closeApproachData
+  const getProcessedCloseApproachData = () => {
+    if (!closeApproachData) return null;
+    
+    // Если closeApproachData - массив из трех элементов
+    if (Array.isArray(closeApproachData) && closeApproachData.length === 3) {
+      return [
+        new Date(closeApproachData[0]), // Первый элемент преобразуем в Date
+        closeApproachData[1],           // Второй элемент без изменений
+        closeApproachData[2]            // Третий элемент без изменений
+      ];
+    }
+    
+    return closeApproachData;
+  };
+
+  const processedCloseApproachData = getProcessedCloseApproachData();
 
   const handleCalculate = async (observations) => {
     try {
@@ -57,7 +69,7 @@ function MainPage() {
     const data = {
       observations,
       orbitData,
-      closeApproachData
+      closeApproachData: processedCloseApproachData
     };
     
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
@@ -99,7 +111,7 @@ function MainPage() {
       </div>
 
       <CloseApproachResults
-        data={closeApproachData}
+        data={processedCloseApproachData}
         onSave={handleSave}
         onExport={handleExport}
       />

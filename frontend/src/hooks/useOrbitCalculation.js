@@ -13,8 +13,9 @@ export function useOrbitCalculation() {
         inclination: 15.67 
       });
 
+      console.log(result.closest_approach_time);
       setCloseApproachData({ 
-        date: result.closest_approach_time, 
+        date: new Date(result.closest_approach_time), 
         distanceAU: result.min_distance_au, 
         distanceKm: result.min_distance_km 
       });

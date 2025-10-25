@@ -7,7 +7,7 @@ function ResultCard({ label, value, unit = '' }) {
     <div className="result-card">
       <div className="result-label">{label}</div>
       <div className="result-value">
-        {value ? formatNumber(value) : '-'}
+        {value}
       </div>
       {unit && <div className="result-unit">{unit}</div>}
     </div>
