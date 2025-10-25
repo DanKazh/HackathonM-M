@@ -13,11 +13,11 @@ export const cometService = {
     return response.data;
   },
 
-  // Рассчитать орбиту
-  async calculateOrbit(groupId) {
-    const response = await api.post(`/calculate-orbit/${groupId}`);
-    return response.data;
-  },
+  // // Рассчитать орбиту
+  // async calculateOrbit(groupId) {
+  //   const response = await api.post(`/calculate-orbit/${groupId}`);
+  //   return response.data;
+  // },
 
   // Получить результаты сближения
   async getCloseApproach(groupId) {
@@ -30,4 +30,29 @@ export const cometService = {
     const response = await api.get('/observation-groups/');
     return response.data;
   }
+};
+
+// services/api.js
+const API_BASE_URL = 'http://localhost:8000';
+
+export const calculateOrbit = async (observations) => {
+  const response = await fetch(`${API_BASE_URL}/api/calculate`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      observations: observations.map(obs => [
+        obs.date,
+        parseFloat(obs.ra),
+        parseFloat(obs.dec)
+      ])
+    }),
+  });
+
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+
+  return await response.json();
 };

@@ -10,6 +10,12 @@ function ObservationTable({ onCalculate }) {
 
   const canCalculate = observations.length >= MIN_OBSERVATIONS;
 
+  const handleCalculateClick = () => {
+    if (canCalculate) {
+      onCalculate(observations);
+    }
+  };
+
   return (
     <div className="observation-table-container">
       <h3>Список наблюдений ({observations.length})</h3>
@@ -63,7 +69,7 @@ function ObservationTable({ onCalculate }) {
           <div className="button-group">
             <Button
               variant="success"
-              onClick={onCalculate}
+              onClick={handleCalculateClick}
               disabled={!canCalculate}
             >
               {canCalculate 

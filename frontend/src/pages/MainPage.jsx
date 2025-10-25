@@ -6,17 +6,18 @@ import CloseApproachResults from '../components/results/CloseApproachResults';
 import StatusMessage from '../components/common/StatusMessage';
 import { useObservations } from '../hooks/useObservations';
 import { useOrbitCalculation } from '../hooks/useOrbitCalculation';
+import { calculateOrbit } from '../services/cometService';
 import './MainPage.css';
 
 function MainPage() {
   const { observations } = useObservations();
-  const { loading, orbitData, closeApproachData, calculateOrbit } = useOrbitCalculation();
+  const { loading, orbitData, closeApproachData } = useOrbitCalculation();
   const [status, setStatus] = useState(null);
 
-  const handleCalculate = async () => {
+  const handleCalculate = async (observations) => {
     try {
       setStatus({ message: 'Выполняется расчет орбиты...', type: 'info' });
-      await calculateOrbit(observations);
+      const result = await calculateOrbit(observations);
       setStatus({ message: 'Расчет орбиты завершен!', type: 'success' });
     } catch (error) {
       setStatus({ message: 'Ошибка при расчете орбиты', type: 'error' });
