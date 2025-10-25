@@ -3,9 +3,10 @@ from typing import List
 from models.schemas import ObservationPoint, CloseApproachResponse
 import uuid
 from orbital_core.calculator.orbitDetermination import OrbitDetermination
+from orbital_core.visualizer.orbitVisualizer import OrbitVisualizer
 from datetime import datetime
 import numpy as np
-from orbit_visualizer import OrbitVisualizer  # ← ваш исправленный класс
+
 
 
 class OrbitCalculationService:
