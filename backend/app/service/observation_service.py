@@ -2,7 +2,7 @@ from sqlalchemy.orm import Session
 from typing import List
 from datetime import datetime
 
-def get_observations_data(db: Session) -> List[List]:
+def get_coords(db: Session) -> List[List]:
     observations = db.query(Observations).all()
     
     result = []
