@@ -1,32 +1,122 @@
 .orbit-visualization {
-  background: linear-gradient(135deg, #0c1445 0%, #1a237e 100%);
-  border-radius: 10px;
-  height: 300px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  margin: 20px 0;
-  border: 2px solid #3949ab;
+  margin-top: 30px;
+  padding: 20px;
 }
 
-.visualization-content {
+.orbit-visualization h3 {
+  color: white;
+  margin-bottom: 20px;
+  font-size: 24px;
   text-align: center;
 }
 
-.icon {
-  font-size: 3rem;
-  margin-bottom: 15px;
-  animation: float 3s ease-in-out infinite;
+.no-data {
+  text-align: center;
+  padding: 40px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  color: white;
 }
 
-@keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-10px); }
+.orbit-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
 }
 
-.hint {
-  font-size: 0.9rem;
-  opacity: 0.8;
+.orbit-card {
+  background: rgba(255, 255, 255, 0.95);
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.orbit-card.highlight {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.orbit-card.highlight .param-label,
+.orbit-card.highlight .param-value {
+  color: white;
+}
+
+.orbit-card.full-width {
+  grid-column: 1 / -1;
+}
+
+.orbit-card h4 {
+  margin: 0 0 15px 0;
+  color: #1a237e;
+  font-size: 18px;
+  border-bottom: 2px solid #3949ab;
+  padding-bottom: 10px;
+}
+
+.orbit-card.highlight h4 {
+  color: white;
+  border-bottom-color: rgba(255, 255, 255, 0.3);
+}
+
+.param-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.param-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.orbit-card.highlight .param-row {
+  border-bottom-color: rgba(255, 255, 255, 0.2);
+}
+
+.param-label {
+  font-weight: 500;
+  color: #555;
+}
+
+.param-value {
+  font-weight: 600;
+  color: #1a237e;
+  font-size: 16px;
+}
+
+.param-value.date {
+  color: #43a047;
+}
+
+.param-value.distance {
+  color: #e74c3c;
+  font-weight: 700;
+}
+
+.orbit-diagram {
+  margin-top: 15px;
+}
+
+.orbit-svg {
+  width: 100%;
+  height: auto;
+  background: #0a0e27;
+  border-radius: 8px;
+}
+
+.diagram-note {
   margin-top: 10px;
+  font-size: 12px;
+  color: #666;
+  text-align: center;
+  font-style: italic;
+}
+
+@media (max-width: 768px) {
+  .orbit-grid {
+    grid-template-columns: 1fr;
+  }
 }

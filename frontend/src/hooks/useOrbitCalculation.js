@@ -1,14 +1,50 @@
 import { useState } from 'react';
+import apiService from '../services/api';
+
 export function useOrbitCalculation() {
   const [loading, setLoading] = useState(false);
   const [orbitData, setOrbitData] = useState(null);
   const [closeApproachData, setCloseApproachData] = useState(null);
-  const calculateOrbit = async () => {
-    setLoading(true);
-    await new Promise(r => setTimeout(r, 2000));
-    setOrbitData({ semiMajorAxis: 2.765, eccentricity: 0.892, inclination: 15.67 });
-    setCloseApproachData({ date: '2024-07-15T08:23:45Z', distanceAU: 0.234, distanceKm: 35012456 });
-    setLoading(false);
+  const [error, setError] = useState(null);
+
+  const calculateOrbit = async (observations) => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const orbit = await apiService.calculateOrbit(observations);
+      setOrbitData(orbit);
+
+      try {
+        const approach = await apiService.calculateCloseApproach(orbit);
+        setCloseApproachData(approach);
+      } catch (approachError) {
+        console.warn('Не удалось рассчитать сближение:', approachError);
+        setCloseApproachData(null);
+      }
+
+      return orbit;
+    } catch (err) {
+      setError(err.message);
+      console.error('Ошибка расчета орбиты:', err);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
   };
-  return { loading, orbitData, closeApproachData, calculateOrbit };
+
+  const resetResults = () => {
+    setOrbitData(null);
+    setCloseApproachData(null);
+    setError(null);
+  };
+
+  return {
+    loading,
+    orbitData,
+    closeApproachData,
+    error,
+    calculateOrbit,
+    resetResults
+  };
 }
