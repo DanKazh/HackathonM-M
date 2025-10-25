@@ -1,18 +1,35 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import ObservationInput from '../components/observations/ObservationInput';
 import ObservationTable from '../components/observations/ObservationTable';
 import OrbitResults from '../components/results/OrbitResults';
 import CloseApproachResults from '../components/results/CloseApproachResults';
 import StatusMessage from '../components/common/StatusMessage';
 import { useObservations } from '../hooks/useObservations';
+import { useLocalStorage } from '../hooks/useLocalStorage';
 import { useOrbitCalculation } from '../hooks/useOrbitCalculation';
 import { calculateOrbit } from '../services/cometService';
 import './MainPage.css';
 
 function MainPage() {
-  const { observations } = useObservations();
+  // Используем useLocalStorage для сохранения наблюдений
+  const [storedObservations, setStoredObservations] = useLocalStorage('comet-observations', []);
+  
+  // Передаем сохраненные наблюдения в useObservations
+  const { observations, addObservation, updateObservation, deleteObservation, clearObservations } = useObservations(storedObservations);
+  
   const { loading, orbitData, closeApproachData, updateOrbitData, setLoading } = useOrbitCalculation();
   const [status, setStatus] = useState(null);
+
+  // Сохраняем наблюдения в localStorage при изменении
+  useEffect(() => {
+    console.log('Observations changed, saving to localStorage:', observations);
+    setStoredObservations(observations);
+  }, [observations, setStoredObservations]);
+
+  // Добавим useEffect для отладки начальной загрузки
+  useEffect(() => {
+    console.log('Initial stored observations:', storedObservations);
+  }, []);
 
   const handleCalculate = async (observations) => {
     try {
@@ -66,8 +83,14 @@ function MainPage() {
 
       <div className="grid-container">
         <div className="input-section">
-          <ObservationInput />
-          <ObservationTable onCalculate={handleCalculate} />
+          <ObservationInput onAddObservation={addObservation} />
+          <ObservationTable 
+            observations={observations}
+            onUpdateObservation={updateObservation}
+            onDeleteObservation={deleteObservation}
+            onClearObservations={clearObservations}
+            onCalculate={handleCalculate} 
+          />
         </div>
 
         <div className="results-section">
