@@ -12,9 +12,12 @@ class OrbitCalculationService:
         self.orbit_determination = OrbitDetermination()
     
     async def calculate_min_distance(self, observations: List[ObservationPoint]) -> CloseApproachResponse:
-        """
-        Вызывает функцию расчета минимального расстояния через OrbitDetermination
-        """
+        observations = [
+    ('2025-10-25 17:50:00', 252.4714, 28.5345),
+    ('2025-10-25 17:50:00', 244.1961, -45.8773),
+    ('2025-10-25 17:50:00', 115.5531, -66.3296),
+    ('2025-10-25 17:50:00', 321.6829, 34.9168),
+    ('2025-10-25 17:50:00', 86.2134, 40.5738), ]
         try:
             # Преобразуем наблюдения в формат, ожидаемый OrbitDetermination
             for obs in observations:
