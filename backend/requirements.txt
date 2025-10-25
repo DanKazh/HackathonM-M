@@ -1,0 +1,14 @@
+fastapi
+uvicorn
+astropy
+numpy
+scipy
+pydantic
+asyncio
+python-dotenv
+requests
+aiohttp
+python-dateutil
+pytest
+pytest-cov
+httpx
