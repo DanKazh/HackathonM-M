@@ -3,6 +3,7 @@ from typing import List
 from models.schemas import ObservationRequest, CloseApproachResponse, ObservationPoint, ErrorResponse
 from service.front import OrbitCalculationService
 from service.statistics import calculate_statistics
+from service.statistics import calculate_statistics
 
 router = APIRouter()
 calculation_service = OrbitCalculationService()
@@ -47,6 +48,7 @@ async def _validate_and_convert_observations(observation_lists: List[List]) -> L
     
     observations = []
     observations_data = []  # Для statistics
+    observations_data = []  # Для statistics
     
     for i, obs_list in enumerate(observation_lists):
         if len(obs_list) != 3:
@@ -66,12 +68,19 @@ async def _validate_and_convert_observations(observation_lists: List[List]) -> L
             # Добавляем данные для statistics
             observations_data.append([timestamp, float(ra), float(dec)])
             
+            
+            # Добавляем данные для statistics
+            observations_data.append([timestamp, float(ra), float(dec)])
+            
         except Exception as e:
             raise ValueError(f"Неверный формат данных в наблюдении {i}: {str(e)}")
     
     # Проверяем, что есть хотя бы 3 наблюдения для расчета орбиты
     if len(observations) < 3:
         raise ValueError("Для расчета орбиты необходимо минимум 3 наблюдения")
+    
+    # Вызов функции calculate_statistics
+    #await calculate_statistics(observations_data)
     
     # Вызов функции calculate_statistics
     #await calculate_statistics(observations_data)

@@ -1,79 +1,39 @@
 #!/usr/bin/env python3
-"""
-Скрипт для управления миграциями базы данных
-"""
-import os
 import sys
+from pathlib import Path
+from dotenv import load_dotenv
+from alembic import context
 from alembic.config import Config
-from alembic import command
+from alembic.runtime.environment import EnvironmentContext
+from alembic.script import ScriptDirectory
 
-def get_alembic_config():
-    """Получить конфигурацию Alembic"""
-    current_dir = os.path.dirname(os.path.abspath(__file__))
-    alembic_ini_path = os.path.join(current_dir, 'alembic.ini')
-    
-    config = Config(alembic_ini_path)
-    config.set_main_option('script_location', current_dir)
-    
-    return config
+# Добавляем путь к корню проекта
+current_file = Path(__file__)
+project_root = current_file.parent.parent.parent.parent
+sys.path.insert(0, str(project_root))
 
-def run_migration():
-    """Запустить миграции"""
-    config = get_alembic_config()
-    command.upgrade(config, 'head')
+# Загружаем .env
+load_dotenv(project_root / '.env')
 
-def create_migration(message):
-    """Создать новую миграцию"""
-    config = get_alembic_config()
-    command.revision(config, message=message, autogenerate=True)
+def run_migrations():
+    # Указываем путь к alembic.ini
+    alembic_ini_path = Path(__file__).parent / 'alembic.ini'
+    alembic_cfg = Config(str(alembic_ini_path))
+    
+    script = ScriptDirectory.from_config(alembic_cfg)
+    
+    def upgrade(rev, context: context):
+        return script._upgrade_revs("head", rev)
+    
+    with EnvironmentContext(
+        alembic_cfg,
+        script,
+        fn=upgrade,
+        starting_rev=None,
+        destination_rev="head",
+        tag=None,
+    ):
+        script.run_env()
 
-def downgrade_migration(revision):
-    """Откатить миграцию"""
-    config = get_alembic_config()
-    command.downgrade(config, revision)
-
-def show_history():
-    """Показать историю миграций"""
-    config = get_alembic_config()
-    command.history(config, indicate_current=True)
-
-def show_current():
-    """Показать текущую версию"""
-    config = get_alembic_config()
-    command.current(config)
-
-if __name__ == '__main__':
-    if len(sys.argv) < 2:
-        print("Использование:")
-        print("  python migrate.py upgrade          - применить все миграции")
-        print("  python migrate.py create <message> - создать новую миграцию")
-        print("  python migrate.py downgrade <rev>  - откатить миграцию")
-        print("  python migrate.py history          - показать историю")
-        print("  python migrate.py current          - показать текущую версию")
-        sys.exit(1)
-    
-    action = sys.argv[1]
-    
-    if action == 'upgrade':
-        run_migration()
-        print("Миграции успешно применены")
-    
-    elif action == 'create' and len(sys.argv) > 2:
-        message = sys.argv[2]
-        create_migration(message)
-        print(f"Миграция '{message}' создана")
-    
-    elif action == 'downgrade' and len(sys.argv) > 2:
-        revision = sys.argv[2]
-        downgrade_migration(revision)
-        print(f"Откат до версии {revision} выполнен")
-    
-    elif action == 'history':
-        show_history()
-    
-    elif action == 'current':
-        show_current()
-    
-    else:
-        print("Неизвестная команда")
-        sys.exit(1)
+if __name__ == "__main__":
+    run_migrations()

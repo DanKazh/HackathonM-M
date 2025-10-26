@@ -15,3 +15,6 @@ httpx
 alembic
 sqlalchemy
 psycopg2-binary
+asyncpg
+jose
+python-jose[cryptography]

@@ -1,0 +1,93 @@
+import React from 'react';
+import { useObservations } from '../../hooks/useObservations';
+import Button from '../common/Button';
+import { MIN_OBSERVATIONS } from '../../utils/constants';
+import { formatDateTime, formatNumber } from '../../utils/formatters';
+import './ObservationTable.css';
+
+function ObservationTable({ 
+  observations, 
+  onUpdateObservation, 
+  onDeleteObservation, 
+  onClearObservations, 
+  onCalculate 
+}) {
+  const canCalculate = observations.length >= MIN_OBSERVATIONS;
+
+  const handleCalculateClick = () => {
+    if (canCalculate) {
+      onCalculate(observations);
+    }
+  };
+
+  return (
+    <div className="observation-table-container">
+      <h3>Список наблюдений ({observations.length})</h3>
+      
+      {observations.length === 0 ? (
+        <div className="empty-state">
+          <p>📡 Наблюдения отсутствуют</p>
+          <p className="hint">Добавьте минимум {MIN_OBSERVATIONS} наблюдений для расчета орбиты</p>
+        </div>
+      ) : (
+        <>
+          <div className="table-wrapper">
+            <table className="observation-table">
+              <thead>
+                <tr>
+                  <th>№</th>
+                  <th>Дата/Время (UTC)</th>
+                  <th>RA (°)</th>
+                  <th>Dec (°)</th>
+                  <th>Действия</th>
+                </tr>
+              </thead>
+              <tbody>
+                {observations.map((obs, index) => {
+                  const ra = parseFloat(obs.ra);
+                  const dec = parseFloat(obs.dec);
+                  
+                  return (
+                    <tr key={obs.id}>
+                      <td>{index + 1}</td>
+                      <td>{formatDateTime(obs.date)}</td>
+                      <td>{isNaN(ra) ? obs.ra : ra.toFixed(4)}</td>
+                      <td>{isNaN(dec) ? obs.dec : dec.toFixed(4)}</td>
+                      <td>
+                        <Button
+                          variant="danger"
+                          className="btn-small"
+                          onClick={() => onDeleteObservation(obs.id)}
+                        >
+                          Удалить
+                        </Button>
+                      </td>
+                    </tr>
+                  );
+                })}
+
+              </tbody>
+            </table>
+          </div>
+
+          <div className="button-group">
+            <Button
+              variant="success"
+              onClick={handleCalculateClick}
+              disabled={!canCalculate}
+            >
+              {canCalculate 
+                ? 'Рассчитать орбиту' 
+                : `Нужно ещё ${MIN_OBSERVATIONS - observations.length} наблюдений`}
+            </Button>
+            <Button variant="secondary" onClick={onClearObservations}>
+              Очистить все
+            </Button>
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
+export default ObservationTable;

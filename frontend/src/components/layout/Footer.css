@@ -1,0 +1,22 @@
+.footer {
+  text-align: center;
+  color: white;
+  padding: 30px 20px;
+  margin-top: 60px;
+}
+
+.footer p {
+  margin: 5px 0;
+  opacity: 0.9;
+}
+
+.footer a {
+  color: #bbdefb;
+  text-decoration: none;
+  margin-left: 8px;
+}
+
+.footer a:hover {
+  color: white;
+  text-decoration: underline;
+}

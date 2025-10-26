@@ -1,0 +1,31 @@
+.main-page {
+  padding: 20px 0;
+}
+
+.grid-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+  margin-bottom: 30px;
+}
+
+@media (max-width: 768px) {
+  .grid-container {
+    grid-template-columns: 1fr;
+  }
+}
+
+.input-section {
+  grid-column: 1;
+}
+
+.results-section {
+  grid-column: 2;
+}
+
+@media (max-width: 768px) {
+  .input-section,
+  .results-section {
+    grid-column: 1;
+  }
+}
