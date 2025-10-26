@@ -4,10 +4,24 @@ import ResultCard from './ResultCard';
 import OrbitVisualization from './OrbitVisualization';
 import './OrbitResults.css';
 
-function OrbitResults({ data }) {
+function OrbitResults({ data, loading }) {
+  // Если идет загрузка
+  if (loading) {
+    return (
+      <Card title="Визуализация и результаты">
+        <div className="loading-results">
+          <div className="loading-spinner"></div>
+          <p>Вычисление орбиты...</p>
+        </div>
+      </Card>
+    );
+  }
+
+
   return (
     <Card title="Визуализация и результаты">
-      <OrbitVisualization />
+      {/* Передаем данные анимации */}
+      <OrbitVisualization orbitAnimation={data?.orbit_animation} />
       
       {data ? (
         <div className="orbit-results">
@@ -15,19 +29,21 @@ function OrbitResults({ data }) {
           <div className="results-grid">
             <ResultCard
               label="Большая полуось"
-              value={data.semiMajorAxis}
+              value={data.big_poluos}  // Исправлено на ваше поле
               unit="а.е."
             />
             <ResultCard
               label="Эксцентриситет"
-              value={data.eccentricity}
+              value={data.eks}  // Исправлено на ваше поле
             />
             <ResultCard
               label="Наклонение"
-              value={data.inclination}
+              value={data.i}  // Исправлено на ваше поле
               unit="°"
             />
           </div>
+          
+         
         </div>
       ) : (
         <div className="empty-results">

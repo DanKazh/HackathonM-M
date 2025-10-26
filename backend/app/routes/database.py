@@ -41,7 +41,7 @@ async def get_user(user_id: int, db: DB.PostgresDB = Depends(get_database)): # �
         return dict(user)
     return {"error": "User not found"}
 
-@db_router.post("/users") # ИЗМЕНИТЬ ЗАПРОСЫ
+@db_router.post("/users") 
 async def create_user(
     name: str, 
     email: str, 

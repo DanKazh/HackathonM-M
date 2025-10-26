@@ -5,6 +5,7 @@ from orbital_core.calculator.orbitDetermination import OrbitDetermination
 from orbital_core.visualizer.orbitVisualizer import OrbitVisualizer
 from datetime import datetime
 import numpy as np
+import base64
 
 class OrbitCalculationService:
     """Сервис для расчета орбитальных параметров"""
@@ -31,7 +32,6 @@ class OrbitCalculationService:
             orbit_animation = await self._generate_orbit_animation(
                 orbital_elements, observations, closest_approach_time
             )
-            
             # Формирование ответа
             return self._build_response(
                 orbital_elements, min_distance_au, closest_approach_time, orbit_animation
@@ -64,14 +64,20 @@ class OrbitCalculationService:
         return min_distance, min_date
     
     async def _generate_orbit_animation(self, orbital_elements: List[float], 
-                                      observations: List[ObservationPoint],
-                                      close_approach_time: datetime) -> str:
-        """Генерирует анимацию орбиты"""
+                                  observations: List[ObservationPoint],
+                                  close_approach_time: datetime) -> str:
+      
         try:
+            print(f"Starting orbit animation generation with {len(observations)} observations")
+            print(f"Orbital elements: {orbital_elements}")
+            print(f"Close approach time: {close_approach_time}")
+            
             # Эпоха для M0 — первое наблюдение
             epoch_for_M0 = observations[0].timestamp
+            print(f"Epoch for M0: {epoch_for_M0}")
             
-            orbit_animation = self.visualizer.create_orbit_animation(
+            # Получаем анимацию как bytes
+            animation_bytes = self.visualizer.create_orbit_animation(
                 a=orbital_elements[0],
                 e=orbital_elements[1],
                 i=orbital_elements[2],
@@ -80,26 +86,41 @@ class OrbitCalculationService:
                 M0=orbital_elements[5],
                 epoch=epoch_for_M0,
                 close_approach_time=close_approach_time,
-                duration_days=730,  # 2 года вокруг сближения
+                duration_days=730,
                 frames=100
             )
-            return orbit_animation
+            
+            print(f"Animation bytes type: {type(animation_bytes)}")
+            print(f"Animation bytes length: {len(animation_bytes) if animation_bytes else 0}")
+            
+            if animation_bytes and len(animation_bytes) > 0:
+                # Кодируем в base64 БЕЗ data URL префикса
+                base64_animation = base64.b64encode(animation_bytes).decode('utf-8')
+                print(f"Animation generated successfully, size: {len(base64_animation)} chars")
+                print(f"First 100 chars of base64: {base64_animation[:100]}...")
+                return base64_animation
+            else:
+                print("Animation bytes are empty or None")
+                return ""
+                
         except Exception as anim_error:
             print(f"Анимация не создана: {anim_error}")
+            import traceback
+            print(f"Traceback: {traceback.format_exc()}")
             return ""
-    
+        
     def _build_response(self, orbital_elements: List[float], min_distance_au: float,
                        closest_approach_time: datetime, orbit_animation: str) -> CloseApproachResponse:
         """Формирует объект ответа"""
         distance_km = min_distance_au * 149597870.7
         
         return CloseApproachResponse(
-            min_distance_km=distance_km,
-            min_distance_au=min_distance_au,
+            min_distance_km=round(distance_km, 2),
+            min_distance_au=round(min_distance_au, 2),
             closest_approach_time=closest_approach_time,
-            big_poluos=orbital_elements[0],
-            eks=orbital_elements[1],
-            i=orbital_elements[2],
+            big_poluos=round(orbital_elements[0], 2),
+            eks=round(orbital_elements[1], 2),
+            i=round(orbital_elements[2], 2),
             calculation_id=str(uuid.uuid4()),
             orbit_animation=orbit_animation
         )

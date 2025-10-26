@@ -29,11 +29,11 @@ class OrbitVisualizer:
         close_approach_time: datetime,
         duration_days: int = 730,
         frames: int = 100
-    ) -> str:
+    ) -> bytes:
         """
-        Создаёт анимацию орбиты объекта и Земли.
-        Позиция объекта вычисляется по 6 орбитальным элементам и M0 на эпоху.
+        Создаёт анимацию орбиты объекта и Земли и возвращает её как bytes (GIF).
         """
+        fig = None
         try:
             start_date = close_approach_time - timedelta(days=duration_days // 2)
             frame_dates = [
@@ -42,12 +42,12 @@ class OrbitVisualizer:
             ]
             astropy_times = Time(frame_dates)
 
-            # Положение Земли из astropy
+            # Положение Земли
             earth_positions = np.array([
                 get_body_barycentric('earth', t).xyz.to(u.AU).value for t in astropy_times
             ])
 
-            # Положение объекта — по элементам и M0
+            # Положение объекта
             object_positions = np.array([
                 self._position_from_elements(a, e, i, Omega, omega, M0, epoch, t)
                 for t in frame_dates
@@ -68,7 +68,7 @@ class OrbitVisualizer:
                 self._position_from_elements(a, e, i, Omega, omega, M0, epoch, t) for t in dense_dates
             ])
 
-            # Расширенные кадры с паузой
+            # Кадры с паузой на минимуме
             pause_frames = 10
             extended_indices = []
             for idx in range(frames):
@@ -76,9 +76,9 @@ class OrbitVisualizer:
                 if idx == min_dist_idx:
                     extended_indices.extend([idx] * pause_frames)
 
-            # Настройка графика
-            self.fig = plt.figure(figsize=(10, 8))
-            self.ax = self.fig.add_subplot(111, projection='3d')
+            # Создаём график
+            fig = plt.figure(figsize=(10, 8))
+            ax = fig.add_subplot(111, projection='3d')
 
             max_range = max(
                 np.max(np.abs(object_orbit)),
@@ -86,25 +86,25 @@ class OrbitVisualizer:
                 2.0
             ) * 1.1
 
-            self.ax.set_xlim([-max_range, max_range])
-            self.ax.set_ylim([-max_range, max_range])
-            self.ax.set_zlim([-max_range / 2, max_range / 2])
+            ax.set_xlim([-max_range, max_range])
+            ax.set_ylim([-max_range, max_range])
+            ax.set_zlim([-max_range / 2, max_range / 2])
 
-            self.ax.set_xlabel('X (AU)')
-            self.ax.set_ylabel('Y (AU)')
-            self.ax.set_zlabel('Z (AU)')
-            self.ax.set_title(f'Орбиты объекта и Земли\nМин. расстояние: {min_distance_au:.3f} AU')
+            ax.set_xlabel('X (AU)')
+            ax.set_ylabel('Y (AU)')
+            ax.set_zlabel('Z (AU)')
+            ax.set_title(f'Орбиты объекта и Земли\nМин. расстояние: {min_distance_au:.3f} AU')
 
-            self.ax.plot(earth_orbit[:, 0], earth_orbit[:, 1], earth_orbit[:, 2], 'b-', alpha=0.3, label='Орбита Земли')
-            self.ax.plot(object_orbit[:, 0], object_orbit[:, 1], object_orbit[:, 2], 'r-', alpha=0.3, label='Орбита объекта')
-            self.ax.plot([0], [0], [0], 'yo', markersize=20, label='Солнце')
+            ax.plot(earth_orbit[:, 0], earth_orbit[:, 1], earth_orbit[:, 2], 'b-', alpha=0.3, label='Орбита Земли')
+            ax.plot(object_orbit[:, 0], object_orbit[:, 1], object_orbit[:, 2], 'r-', alpha=0.3, label='Орбита объекта')
+            ax.plot([0], [0], [0], 'yo', markersize=20, label='Солнце')
 
-            earth_point, = self.ax.plot([], [], [], 'bo', markersize=10)
-            object_point, = self.ax.plot([], [], [], 'ro', markersize=8)
-            min_marker, = self.ax.plot([], [], [], 'g*', markersize=15, label='Мин. расстояние')
+            earth_point, = ax.plot([], [], [], 'bo', markersize=10)
+            object_point, = ax.plot([], [], [], 'ro', markersize=8)
+            min_marker, = ax.plot([], [], [], 'g*', markersize=15, label='Мин. расстояние')
 
-            self.ax.legend(loc='upper right')
-            self.ax.grid(True, alpha=0.3)
+            ax.legend(loc='upper right')
+            ax.grid(True, alpha=0.3)
 
             def animate(idx):
                 e_pos = earth_positions[idx]
@@ -121,22 +121,32 @@ class OrbitVisualizer:
                     min_marker.set_3d_properties([])
                 return earth_point, object_point, min_marker
 
-            self.animation = FuncAnimation(
-                self.fig, animate, frames=extended_indices,
+            animation = FuncAnimation(
+                fig, animate, frames=extended_indices,
                 interval=100, blit=False, repeat=True
             )
 
-            gif_base64 = self._animation_to_base64()
-            plt.close(self.fig)
-            return gif_base64
+            # Сохраняем в байты
+            with tempfile.NamedTemporaryFile(suffix='.gif', delete=False) as tmp:
+                tmp_path = tmp.name
+
+            animation.save(tmp_path, writer='pillow', fps=10, dpi=80)
+
+            with open(tmp_path, 'rb') as f:
+                gif_bytes = f.read()
+
+            os.unlink(tmp_path)
+            return gif_bytes
 
         except Exception as e:
             print(f"Ошибка при создании анимации: {e}")
             import traceback
             traceback.print_exc()
-            plt.close('all')
-            return ""
-
+            raise
+        finally:
+            if fig is not None:
+                plt.close(fig)  # Гарантированно закрываем фигуру
+                
     def _position_from_elements(
         self,
         a: float,

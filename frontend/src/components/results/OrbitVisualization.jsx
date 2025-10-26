@@ -1,7 +1,28 @@
 import React from 'react';
 import './OrbitVisualization.css';
 
-function OrbitVisualization() {
+function OrbitVisualization({ orbitAnimation }) {
+  if (orbitAnimation) {
+    return (
+      <div className="orbit-visualization">
+        <div className="animation-container">
+          <h4>Анимация орбиты</h4>
+          <div className="image-wrapper">
+            <img 
+              src={`data:image/gif;base64,${orbitAnimation}`} 
+              alt="Анимация орбиты кометы"
+              className="orbit-gif"
+            />
+          </div>
+          <p className="animation-description">
+            Траектория движения кометы относительно Земли
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // Если анимации нет
   return (
     <div className="orbit-visualization">
       <div className="visualization-content">
