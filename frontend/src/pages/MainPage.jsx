@@ -1,42 +1,49 @@
 import React, { useState, useEffect } from 'react';
 import ObservationInput from '../components/observations/ObservationInput';
 import ObservationTable from '../components/observations/ObservationTable';
-import OrbitResults from '../components/results/OrbitResults';
-import CloseApproachResults from '../components/results/CloseApproachResults';
 import CombinedResults from '../components/results/CombinedResults';
 import StatusMessage from '../components/common/StatusMessage';
 import { useObservations } from '../hooks/useObservations';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 import { useOrbitCalculation } from '../hooks/useOrbitCalculation';
-import { calculateOrbit } from '../services/cometService';
+import { useAuth } from '../hooks/useAuth';
 import './MainPage.css';
-import ObservationList from '../components/observations/ObservationList';
 
 function MainPage() {
-  // Используем useLocalStorage для сохранения наблюдений
   const [storedObservations, setStoredObservations] = useLocalStorage('comet-observations', []);
-  
-  // Передаем сохраненные наблюдения в useObservations
   const { observations, addObservation, updateObservation, deleteObservation, clearObservations } = useObservations(storedObservations);
   
-  const { loading, orbitData, closeApproachData, updateOrbitData, setLoading } = useOrbitCalculation();
+  const { 
+    loading, 
+    orbitData, 
+    closeApproachData, 
+    calculateOrbitWithAuth,
+    calculateOrbitWithSave,
+    isAuthenticated 
+  } = useOrbitCalculation();
+  
   const [status, setStatus] = useState(null);
+  const { checkAuth } = useAuth();
 
   // Сохраняем наблюдения в localStorage при изменении
   useEffect(() => {
     setStoredObservations(observations);
   }, [observations, setStoredObservations]);
 
+  // Проверяем аутентификацию при загрузке
+  useEffect(() => {
+    checkAuth();
+  }, [checkAuth]);
+
   // Функция для преобразования closeApproachData
   const getProcessedCloseApproachData = () => {
     if (!closeApproachData) return null;
     
-    // Если closeApproachData - массив из трех элементов
     if (Array.isArray(closeApproachData) && closeApproachData.length === 3) {
       return [
-        new Date(closeApproachData[0]), // Первый элемент преобразуем в Date
-        closeApproachData[1],           // Второй элемент без изменений
-        closeApproachData[2]            // Третий элемент без изменений
+        new Date(closeApproachData[0]),
+        closeApproachData[1],
+        closeApproachData[2]
       ];
     }
     
@@ -45,40 +52,67 @@ function MainPage() {
 
   const processedCloseApproachData = getProcessedCloseApproachData();
 
-  const handleCalculate = async (observations) => {
+  const handleCalculate = async (observationsToCalculate) => {
     try {
-      setLoading(true);
       setStatus({ message: 'Выполняется расчет орбиты...', type: 'info' });
 
-      const result = await calculateOrbit(observations);
+      // Автоматически выбираем правильный эндпоинт в зависимости от авторизации
+      const result = await calculateOrbitWithAuth(observationsToCalculate);
 
-      updateOrbitData(result);
-
-      setStatus({ message: 'Расчет орбиты завершен!', type: 'success' });
+      if (result.error) {
+        setStatus({ message: `Ошибка: ${result.error}`, type: 'error' });
+      } else {
+        const message = isAuthenticated 
+          ? 'Расчет орбиты завершен и сохранен! ✅' 
+          : 'Расчет орбиты завершен! (для сохранения войдите в систему)';
+        setStatus({ message, type: 'success' });
+      }
     } catch (error) {
       setStatus({ message: 'Ошибка при расчете орбиты', type: 'error' });
       console.error('Calculation error:', error);
-    } finally {
-      setLoading(false);
     }
   };
 
-  const handleSave = () => {
-    setStatus({ message: 'Результаты сохранены', type: 'success' });
+  // Функция для принудительного сохранения с дополнительными данными
+  const handleCalculateAndSave = async (saveData) => {
+    if (!isAuthenticated) {
+      setStatus({ message: 'Для сохранения расчетов требуется авторизация', type: 'error' });
+      return;
+    }
+
+    try {
+      setStatus({ message: 'Выполняется расчет с сохранением...', type: 'info' });
+
+      const result = await calculateOrbitWithSave(observations, saveData);
+
+      if (result.error) {
+        setStatus({ message: `Ошибка сохранения: ${result.error}`, type: 'error' });
+      } else {
+        setStatus({ 
+          message: `Расчет сохранен! ID: ${result.group_id || result.calculation_id}`, 
+          type: 'success' 
+        });
+      }
+    } catch (error) {
+      setStatus({ message: 'Ошибка при сохранении расчета', type: 'error' });
+      console.error('Save calculation error:', error);
+    }
   };
 
   const handleExport = () => {
     const data = {
       observations,
       orbitData,
-      closeApproachData: processedCloseApproachData
+      closeApproachData: processedCloseApproachData,
+      calculatedAt: new Date().toISOString(),
+      isAuthenticated
     };
     
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'comet-orbit-data.json';
+    a.download = `comet-orbit-data-${new Date().toISOString().split('T')[0]}.json`;
     a.click();
     URL.revokeObjectURL(url);
     
@@ -98,25 +132,24 @@ function MainPage() {
       <div className="grid-container">
         <div className="input-section">
           <ObservationInput onAddObservation={addObservation} />
-          <ObservationList
+          <ObservationTable 
             observations={observations}
             onUpdateObservation={updateObservation}
             onDeleteObservation={deleteObservation}
             onClearObservations={clearObservations}
             onCalculate={handleCalculate} 
+            isAuthenticated={isAuthenticated}
           />
         </div>
 
         <CombinedResults
-          data={orbitData} // здесь находится orbit_animation
-          approachData={closeApproachData} // здесь только данные сближения
-          loading={loading}
-          onSave={handleSave}
+          data={orbitData}
+          approachData={processedCloseApproachData}
+          onSave={handleCalculateAndSave}
           onExport={handleExport}
+          isAuthenticated={isAuthenticated}
         />
       </div>
-
-     
     </div>
   );
 }
