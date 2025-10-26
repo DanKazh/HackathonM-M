@@ -18,3 +18,5 @@ psycopg2-binary
 asyncpg
 jose
 python-jose[cryptography]
+matplotlib
+bcrypt

@@ -1,22 +1,233 @@
 .header {
-  text-align: center;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   color: white;
-  padding: 40px 20px;
+  padding: 20px 0;
 }
 
-.header-content h1 {
-  font-size: 2.5rem;
-  margin-bottom: 10px;
+.header-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.header-main {
+  flex: 1;
+  min-width: 300px;
+}
+
+.header-main h1 {
+  font-size: 2.2rem;
+  margin-bottom: 8px;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  background: linear-gradient(45deg, #fff, #e3f2fd);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
-.header-content p {
-  font-size: 1.1rem;
+.header-main p {
+  font-size: 1rem;
   opacity: 0.9;
+  margin: 0;
 }
 
+.header-right {
+  display: flex;
+  align-items: center;
+}
+
+/* Стили для информации о пользователе в хедере */
+.user-info-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 16px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 25px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.3s;
+}
+
+.user-info-header:hover {
+  background: rgba(255, 255, 255, 0.15);
+  transform: translateY(-1px);
+}
+
+.user-avatar-header {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 1rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.user-details-header {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.username {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: white;
+}
+
+.user-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.profile-link,
+.logout-link {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.8);
+  cursor: pointer;
+  font-size: 0.75rem;
+  padding: 2px 4px;
+  border-radius: 4px;
+  transition: all 0.3s;
+  text-decoration: none;
+}
+
+.profile-link:hover,
+.logout-link:hover {
+  color: white;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.separator {
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 0.7rem;
+}
+
+/* Навигация */
+.header-nav {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.nav-btn {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  padding: 10px 20px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.3s;
+  backdrop-filter: blur(10px);
+  font-size: 0.9rem;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.nav-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.nav-btn.active {
+  background: rgba(76, 175, 80, 0.3);
+  border-color: rgba(76, 175, 80, 0.5);
+  transform: translateY(-2px);
+}
+
+.profile-btn {
+  background: rgba(33, 150, 243, 0.3);
+  border-color: rgba(33, 150, 243, 0.5);
+}
+
+.login-btn {
+  background: rgba(76, 175, 80, 0.3);
+  border-color: rgba(76, 175, 80, 0.5);
+  padding: 10px 20px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+}
+
+.login-btn:hover {
+  background: rgba(76, 175, 80, 0.5);
+}
+
+/* Адаптивность */
 @media (max-width: 768px) {
-  .header-content h1 {
+  .header-content {
+    flex-direction: column;
+    text-align: center;
+    gap: 15px;
+  }
+  
+  .header-main h1 {
     font-size: 1.8rem;
+  }
+  
+  .header-main {
+    min-width: auto;
+  }
+  
+  .user-info-header {
+    padding: 6px 12px;
+  }
+  
+  .user-avatar-header {
+    width: 32px;
+    height: 32px;
+    font-size: 0.9rem;
+  }
+  
+  .username {
+    font-size: 0.85rem;
+  }
+  
+  .profile-link,
+  .logout-link {
+    font-size: 0.7rem;
+  }
+  
+  .header-nav {
+    gap: 10px;
+    margin-top: 15px;
+    padding-top: 15px;
+  }
+  
+  .nav-btn {
+    padding: 8px 16px;
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .header-main h1 {
+    font-size: 1.5rem;
+  }
+  
+  .user-details-header {
+    display: none;
+  }
+  
+  .user-info-header {
+    padding: 8px;
   }
 }

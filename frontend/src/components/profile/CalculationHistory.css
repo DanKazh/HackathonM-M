@@ -1,0 +1,237 @@
+.calculation-history {
+  margin-top: 20px;
+}
+
+.calculations-stats {
+  margin-bottom: 20px;
+  padding: 10px 15px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 0.9rem;
+}
+
+.calculations-stats strong {
+  color: #4CAF50;
+}
+
+.calculations-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+  gap: 20px;
+}
+
+.calculation-card {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  padding: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s;
+  position: relative;
+}
+
+.calculation-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(255, 255, 255, 0.3);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+}
+
+.calculation-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+
+.calculation-header h4 {
+  margin: 0;
+  color: white;
+  font-size: 1.2rem;
+  font-weight: 600;
+  flex: 1;
+  margin-right: 10px;
+}
+
+.delete-btn {
+  background: rgba(244, 67, 54, 0.2);
+  color: #ff6b6b;
+  border: 1px solid rgba(244, 67, 54, 0.3);
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  transition: all 0.3s;
+  flex-shrink: 0;
+}
+
+.delete-btn:hover {
+  background: rgba(244, 67, 54, 0.4);
+  transform: scale(1.1);
+}
+
+.calculation-description {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.9rem;
+  margin-bottom: 15px;
+  line-height: 1.4;
+  font-style: italic;
+}
+
+.calculation-details {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 15px;
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.detail-row:last-child {
+  border-bottom: none;
+}
+
+.detail-row .label {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.85rem;
+  flex: 1;
+}
+
+.detail-row .value {
+  color: white;
+  font-size: 0.9rem;
+  font-weight: 500;
+  text-align: right;
+  flex: 1;
+}
+
+.calculation-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.calculation-id {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.75rem;
+  font-family: monospace;
+}
+
+.calculation-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.view-btn, .export-btn {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  transition: all 0.3s;
+  white-space: nowrap;
+}
+
+.view-btn {
+  background: rgba(76, 175, 80, 0.8);
+  color: white;
+}
+
+.view-btn:hover {
+  background: rgba(76, 175, 80, 1);
+  transform: translateY(-1px);
+}
+
+.export-btn {
+  background: rgba(33, 150, 243, 0.8);
+  color: white;
+}
+
+.export-btn:hover {
+  background: rgba(33, 150, 243, 1);
+  transform: translateY(-1px);
+}
+
+.loading, .empty {
+  text-align: center;
+  padding: 60px 20px;
+  color: white;
+}
+
+.loading-spinner {
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-top: 3px solid white;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 20px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.empty-state h3 {
+  margin-bottom: 15px;
+  font-size: 1.5rem;
+}
+
+.empty-state p {
+  margin-bottom: 20px;
+  opacity: 0.8;
+  font-size: 1rem;
+}
+
+.retry-btn {
+  background: rgba(76, 175, 80, 0.8);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all 0.3s;
+}
+
+.retry-btn:hover {
+  background: rgba(76, 175, 80, 1);
+  transform: translateY(-2px);
+}
+
+@media (max-width: 768px) {
+  .calculations-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .calculation-card {
+    padding: 15px;
+  }
+  
+  .calculation-footer {
+    flex-direction: column;
+    gap: 10px;
+    align-items: stretch;
+  }
+  
+  .calculation-actions {
+    justify-content: space-between;
+  }
+  
+  .view-btn, .export-btn {
+    flex: 1;
+  }
+}

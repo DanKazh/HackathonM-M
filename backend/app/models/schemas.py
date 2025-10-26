@@ -1,3 +1,4 @@
+from pydantic import BaseModel
 from uuid import UUID
 from pydantic import BaseModel, Field
 from datetime import datetime
@@ -27,32 +28,18 @@ class TokenVerifyResponse(BaseModel):
     user_id: UUID
     username: str
 
+class OrbitAnimationResponse(BaseModel):
+    orbit_animation: Optional[str] = Field(None, description="Анимация орбиты в base64")
+    status: str = Field(..., description="Статус генерации анимации")
+    error_message: Optional[str] = Field(None, description="Сообщение об ошибке")
+
 class ObservationPoint(BaseModel):
     timestamp: datetime
     ra_degrees: float = Field(..., ge=0, le=360, description="Прямое восхождение в градусах")
     dec_degrees: float = Field(..., ge=-90, le=90, description="Склонение в градусах")
 
 class ObservationRequest(BaseModel):
-    observations: List[List[Union[str, float]]] = Field(
-        ..., 
-        description="Список наблюдений: [[timestamp, ra, dec], ...]",
-        min_items=3
-    )
-    
-    @validator('observations')
-    def validate_observation_format(cls, v):
-        for i, obs in enumerate(v):
-            if len(obs) != 3:
-                raise ValueError(f'Observation {i} must have exactly 3 elements: timestamp, ra, dec')
-            
-            if not isinstance(obs[0], str):
-                raise ValueError(f'Observation {i}: timestamp must be a string')
-            if not isinstance(obs[1], (int, float)):
-                raise ValueError(f'Observation {i}: ra must be a number')
-            if not isinstance(obs[2], (int, float)):
-                raise ValueError(f'Observation {i}: dec must be a number')
-                
-        return v
+    observations: List[List] = Field(..., description="Список наблюдений: [[timestamp, ra, dec], ...]")
 
 class CloseApproachResponse(BaseModel):
     min_distance_km: float = Field(..., description="Минимальное расстояние от Земли в км")
@@ -64,13 +51,10 @@ class CloseApproachResponse(BaseModel):
     calculation_id: str = Field(..., description="ID расчета")
     orbit_animation: Optional[str] = Field(None, description="Анимация орбиты в base64")
 
-class OrbitAnimationResponse(BaseModel):
-    orbit_animation: Optional[str] = Field(None, description="Анимация орбиты в base64")
-    status: str = Field(..., description="Статус генерации анимации")
-    error_message: Optional[str] = Field(None, description="Сообщение об ошибке")
-
 class ErrorResponse(BaseModel):
     detail: str
+    error_code: str = None
+
 
 class SaveCalculationRequest(ObservationRequest):
     """Модель для запроса расчета с сохранением"""

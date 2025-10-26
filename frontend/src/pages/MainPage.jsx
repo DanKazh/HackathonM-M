@@ -8,62 +8,112 @@ import StatusMessage from '../components/common/StatusMessage';
 import { useObservations } from '../hooks/useObservations';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 import { useOrbitCalculation } from '../hooks/useOrbitCalculation';
-import { cometService } from '../services/cometService'; // ← Импортируем объект cometService
+import { useAuth } from '../hooks/useAuth';
+import { cometService } from '../services/cometService';
 import './MainPage.css';
 import ObservationList from '../components/observations/ObservationList';
 
 function MainPage() {
-  // Используем useLocalStorage для сохранения наблюдений
   const [storedObservations, setStoredObservations] = useLocalStorage('comet-observations', []);
-  
-  // Передаем сохраненные наблюдения в useObservations
   const { observations, addObservation, updateObservation, deleteObservation, clearObservations } = useObservations(storedObservations);
   
-  // Используем обновленный хук с новыми методами
   const { 
     loading, 
-    generatingAnimation,
     orbitData, 
-    closeApproachData,
+    closeApproachData, 
+    calculateOrbitWithAuth,
+    calculateOrbitWithSave,
+    isAuthenticated,
+    generatingAnimation,
     orbitAnimation,
     calculateOrbit,
-    generateAnimation 
+    generateAnimation
   } = useOrbitCalculation();
   
   const [status, setStatus] = useState(null);
+  const { checkAuth } = useAuth();
 
   // Сохраняем наблюдения в localStorage при изменении
   useEffect(() => {
     setStoredObservations(observations);
   }, [observations, setStoredObservations]);
 
-  const handleCalculate = async (observations) => {
-  try {
-    // 1. Сначала рассчитываем орбиту
-    const orbitResult = await calculateOrbit(observations);
-    console.log('✅ Orbit calculation completed:', orbitResult);
+  // Проверяем аутентификацию при загрузке
+  useEffect(() => {
+    checkAuth();
+  }, [checkAuth]);
+
+  // Функция для преобразования closeApproachData
+  const getProcessedCloseApproachData = () => {
+    if (!closeApproachData) return null;
     
-    // 2. Затем генерируем анимацию на основе данных орбиты
-    if (orbitResult) {
-      console.log('🎬 Starting animation generation...');
-      await generateAnimation(orbitResult, observations);
+    if (Array.isArray(closeApproachData) && closeApproachData.length === 3) {
+      return [
+        new Date(closeApproachData[0]),
+        closeApproachData[1],
+        closeApproachData[2]
+      ];
     }
     
-  } catch (error) {
-    console.error('Calculation error:', error);
-    // Обработка ошибки
-  }
-};
+    return closeApproachData;
+  };
 
-  const handleSave = () => {
-    setStatus({ message: 'Результаты сохранены', type: 'success' });
+  const processedCloseApproachData = getProcessedCloseApproachData();
+
+  const handleCalculate = async (observationsToCalculate) => {
+    try {
+      setStatus({ message: 'Выполняется расчет орбиты...', type: 'info' });
+
+      // Автоматически выбираем правильный эндпоинт в зависимости от авторизации
+      const result = await calculateOrbitWithAuth(observationsToCalculate);
+
+      if (result.error) {
+        setStatus({ message: `Ошибка: ${result.error}`, type: 'error' });
+      } else {
+        const message = isAuthenticated 
+          ? 'Расчет орбиты завершен и сохранен! ✅' 
+          : 'Расчет орбиты завершен! (для сохранения войдите в систему)';
+        setStatus({ message, type: 'success' });
+      }
+    } catch (error) {
+      setStatus({ message: 'Ошибка при расчете орбиты', type: 'error' });
+      console.error('Calculation error:', error);
+    }
+  };
+
+  // Функция для принудительного сохранения с дополнительными данными
+  const handleCalculateAndSave = async (saveData) => {
+    if (!isAuthenticated) {
+      setStatus({ message: 'Для сохранения расчетов требуется авторизация', type: 'error' });
+      return;
+    }
+
+    try {
+      setStatus({ message: 'Выполняется расчет с сохранением...', type: 'info' });
+
+      const result = await calculateOrbitWithSave(observations, saveData);
+
+      if (result.error) {
+        setStatus({ message: `Ошибка сохранения: ${result.error}`, type: 'error' });
+      } else {
+        setStatus({ 
+          message: `Расчет сохранен! ID: ${result.group_id || result.calculation_id}`, 
+          type: 'success' 
+        });
+      }
+    } catch (error) {
+      setStatus({ message: 'Ошибка при сохранении расчета', type: 'error' });
+      console.error('Save calculation error:', error);
+    }
   };
 
   const handleExport = () => {
     const data = {
       observations,
       orbitData,
-      closeApproachData,
+      closeApproachData: processedCloseApproachData,
+      calculatedAt: new Date().toISOString(),
+      isAuthenticated,
       orbitAnimation
     };
     
@@ -71,7 +121,7 @@ function MainPage() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'comet-orbit-data.json';
+    a.download = `comet-orbit-data-${new Date().toISOString().split('T')[0]}.json`;
     a.click();
     URL.revokeObjectURL(url);
     
@@ -100,16 +150,18 @@ function MainPage() {
             onGenerateAnimation={generateAnimation} // ← добавили новый проп
             calculating={loading}
             generatingAnimation={generatingAnimation}
+            isAuthenticated={isAuthenticated}
           />
         </div>
 
         <CombinedResults
           data={orbitData}
-          approachData={closeApproachData}
+          approachData={processedCloseApproachData}
           orbitAnimation={orbitAnimation} // ← передаем отдельно анимацию
           loading={loading}
-          onSave={handleSave}
+          onSave={handleCalculateAndSave}
           onExport={handleExport}
+          isAuthenticated={isAuthenticated}
         />
       </div>
     </div>
