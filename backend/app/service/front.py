@@ -32,11 +32,14 @@ class OrbitCalculationService:
             # Заглушка с реалистичными данными
             result = self._simulate_external_calculation(observation_data)
             
+            # Генерируем уникальный ID расчета
+            calculation_id = str(uuid.uuid4())
+            
             return CloseApproachResponse(
                 min_distance_km=result['min_distance_km'],
                 min_distance_au=result['min_distance_au'],
                 closest_approach_time=result['closest_approach_time'],
-                calculation_id=str(uuid.uuid4())
+                calculation_id=calculation_id
             )
             
         except Exception as e:

@@ -14,6 +14,7 @@ router = APIRouter(prefix="/auth", tags=["auth"])
 
 @router.post("/register", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
 async def register(
+    response: Response,  # Добавляем Response для установки куки
     user_data: UserRegister,
     db: PostgresDB = Depends(get_database)
 ):
@@ -34,14 +35,29 @@ async def register(
     hashed_password = get_password_hash(user_data.password)
     
     # Создаем пользователя
-    user_id = await db.fetchval(
-        "INSERT INTO user_table (login, password_hash) VALUES ($1, $2) RETURNING id",
+    user = await db.fetchrow(
+        "INSERT INTO user_table (login, password_hash) VALUES ($1, $2) RETURNING id, login",
         user_data.username, hashed_password
     )
     
+    # Создаем токен для нового пользователя
+    access_token = create_access_token(
+        data={"sub": user["login"], "user_id": str(user["id"])}
+    )
+    
+    # Устанавливаем токен в HTTP-only куки
+    response.set_cookie(
+        key="access_token",
+        value=access_token,
+        httponly=True,
+        max_age=30 * 60,  # 30 минут
+        secure=False,  # True в продакшене (HTTPS)
+        samesite="strict"
+    )
+    
     return UserResponse(
-        id=user_id,
-        username=user_data.username
+        id=user["id"],
+        username=user["login"]
     )
 
 @router.post("/login", response_model=UserResponse)

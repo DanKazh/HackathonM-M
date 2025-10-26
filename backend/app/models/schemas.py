@@ -2,6 +2,7 @@ from pydantic import BaseModel
 from uuid import UUID
 from pydantic import BaseModel, Field
 from datetime import datetime
+from typing import Optional
 from typing import List
 
 class UserRegister(BaseModel):
@@ -44,3 +45,19 @@ class CloseApproachResponse(BaseModel):
 class ErrorResponse(BaseModel):
     detail: str
     error_code: str = None
+
+
+class SaveCalculationRequest(ObservationRequest):
+    """Модель для запроса расчета с сохранением"""
+    group_name: Optional[str] = None
+    group_description: Optional[str] = None
+    observer_name: Optional[str] = None
+
+class CalculationResponse(BaseModel):
+    """Модель ответа для сохраненного расчета"""
+    calculation_id: str
+    group_id: str
+    min_distance_km: float
+    min_distance_au: float
+    closest_approach_time: datetime
+    saved_at: datetime
