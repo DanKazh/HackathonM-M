@@ -9,7 +9,7 @@
     0 0 30px rgba(0, 255, 255, 0.2),
     inset 0 0 30px rgba(0, 255, 255, 0.1);
   animation: hologramFlicker 4s ease-in-out infinite;
-  overflow: visible; /* УБЕДИТЕСЬ ЧТО ЗДЕСЬ visible */
+  overflow: visible; 
   font-family: 'Courier New', monospace;
   color: #00ffff;
   text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);

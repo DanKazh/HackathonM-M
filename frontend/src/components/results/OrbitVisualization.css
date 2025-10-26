@@ -2,6 +2,7 @@
   margin: 20px auto;
 }
 
+
 .orbit-visualization-panel .panelBody {
   padding: 0;
 }
@@ -70,18 +71,3 @@
   line-height: 1.4;
 }
 
-/* Адаптивность */
-@media (max-width: 768px) {
-  .orbit-visualization-panel {
-    width: 100% !important;
-    max-width: 400px;
-  }
-  
-  .visualization-content {
-    padding: 30px 15px;
-  }
-  
-  .visualization-content .icon {
-    font-size: 3em;
-  }
-}

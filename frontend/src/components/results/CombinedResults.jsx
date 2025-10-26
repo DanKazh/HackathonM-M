@@ -3,6 +3,7 @@ import HolographicPanel from '../common/HolographicPanel';
 import ResultCard from './ResultCard';
 import Button from '../common/Button';
 import { formatDate } from '../../utils/formatters';
+import OrbitVisualization from './OrbitVisualization';
 import './CombinedResults.css';
 
 function CombinedResults({ 
@@ -13,7 +14,6 @@ function CombinedResults({
   orbitAnimation,
   approachData 
 }) {
-  // Если идет загрузка
   if (loading) {
     return (
       <HolographicPanel 
@@ -31,38 +31,17 @@ function CombinedResults({
   }
 
   return (
-    <div className="combined-results-container">
+    <div >
       {/* Основная панель с визуализацией и орбитальными элементами */}
       <HolographicPanel 
         title="Визуализация и результаты"
         width="500px"
         height="auto"
-        className="combined-results-panel"
+        className="combined-results-panel loading"
       >
         <div className="combined-content">
-          {/* Визуализация орбиты */}
-          <div className="orbit-section">
-            {orbitAnimation ? (
-              <div className="animation-container">
-                <div className="image-wrapper">
-                  <img 
-                    src={`data:image/gif;base64,${orbitAnimation}`} 
-                    alt="Анимация орбиты кометы"
-                    className="orbit-gif"
-                  />
-                </div>
-                <p className="animation-description">
-                  Траектория движения кометы относительно Земли
-                </p>
-              </div>
-            ) : (
-              <div className="visualization-placeholder">
-                <div className="icon">🌌</div>
-                <p className="placeholder-text">Ожидание данных</p>
-                <p className="hint">Здесь будет отображаться расчетная орбита кометы</p>
-              </div>
-            )}
-          </div>
+          {/* Передаем анимацию из правильного источника */}
+          <OrbitVisualization orbitAnimation={data?.orbit_animation} />
 
           {/* Орбитальные элементы */}
           {data && (
@@ -99,6 +78,7 @@ function CombinedResults({
           width="500px"
           height="auto"
           className="approach-results-panel"
+         
         >
           <div className="approach-content">
             <div className="approach-grid">

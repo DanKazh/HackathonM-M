@@ -10,6 +10,7 @@ import { useLocalStorage } from '../hooks/useLocalStorage';
 import { useOrbitCalculation } from '../hooks/useOrbitCalculation';
 import { calculateOrbit } from '../services/cometService';
 import './MainPage.css';
+import ObservationList from '../components/observations/ObservationList';
 
 function MainPage() {
   // Используем useLocalStorage для сохранения наблюдений
@@ -97,7 +98,7 @@ function MainPage() {
       <div className="grid-container">
         <div className="input-section">
           <ObservationInput onAddObservation={addObservation} />
-          <ObservationTable 
+          <ObservationList
             observations={observations}
             onUpdateObservation={updateObservation}
             onDeleteObservation={deleteObservation}
@@ -106,13 +107,13 @@ function MainPage() {
           />
         </div>
 
-      <CombinedResults
-        data={orbitData} // данные орбиты
-        approachData={processedCloseApproachData} 
-      
-        onSave={handleSave}
-        onExport={handleExport}
-      />
+        <CombinedResults
+          data={orbitData} // здесь находится orbit_animation
+          approachData={closeApproachData} // здесь только данные сближения
+          loading={loading}
+          onSave={handleSave}
+          onExport={handleExport}
+        />
       </div>
 
      

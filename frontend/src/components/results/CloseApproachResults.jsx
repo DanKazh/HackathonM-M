@@ -12,8 +12,8 @@ function CloseApproachResults({ data, onSave, onExport, orbitAnimation }) {
       {orbitAnimation ? (
         <HolographicPanel 
           title="Визуализация орбиты"
-          width="500px"
-          height="auto"
+          width="400px"
+          height="300px"
           className="orbit-visualization-panel"
         >
           <div className="animation-container">
