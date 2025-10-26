@@ -2,7 +2,9 @@ from typing import List, Optional
 from models.schemas import ObservationPoint, CloseApproachResponse, OrbitAnimationResponse
 import uuid
 from orbital_core.calculator.orbitDetermination import OrbitDetermination
+from orbital_core.calculator.orbitDetermination import OrbitDeterminationDenis
 from orbital_core.visualizer.orbitVisualizer import OrbitVisualizer
+from orbital_core.calculator.orbitDetermination import calculate_orbit
 from datetime import datetime
 import numpy as np
 import base64
@@ -14,6 +16,7 @@ class OrbitCalculationService:
     
     def __init__(self):
         self.orbit_determination = OrbitDetermination()
+        self.distance_finder = OrbitDeterminationDenis()
         self.visualizer = OrbitVisualizer()
         self.animation_executor = ThreadPoolExecutor(max_workers=2)
     
@@ -22,13 +25,13 @@ class OrbitCalculationService:
         Быстрый расчет орбитальных параметров и сближения
         """
         try:
-            # Добавление наблюдений в систему определения орбиты
-            self._add_observations_to_determination(observations)
+            print(observations)
+            observations_data = [[str(x.timestamp), x.ra_degrees, x.dec_degrees] for x in observations]
+            orbital_elements = calculate_orbit(observations_data)
+            print(orbital_elements)
+            if orbital_elements is None:
+                orbital_elements = self._get_fallback_orbit()
             
-            # Расчёт орбитальных элементов
-            orbital_elements = self._calculate_orbital_elements()
-            
-            # Расчет минимального расстояния
             min_distance_au, closest_approach_time = self._calculate_min_earth_distance(orbital_elements)
             
             # Формирование ответа БЕЗ анимации
@@ -135,8 +138,8 @@ class OrbitCalculationService:
     
     def _calculate_min_earth_distance(self, orbital_elements: List[float]) -> tuple:
         """Вычисляет минимальное расстояние до Земли"""
-        min_distance_approx, min_date_approx, _ = self.orbit_determination.calculate_min_earth_distance(orbital_elements)
-        min_distance, min_date = self.orbit_determination.find_exact_min_distance(min_date_approx)
+        min_distance_approx, min_date_approx, _ = self.distance_finder.calculate_min_earth_distance(orbital_elements)
+        min_distance, min_date = self.distance_finder.find_exact_min_distance(min_date_approx)
         return min_distance, min_date
     
     def _build_response(self, orbital_elements: List[float], min_distance_au: float,
