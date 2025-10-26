@@ -1,0 +1,410 @@
+.holographicPanel {
+  position: relative;
+  background: rgba(0, 20, 40, 0.7);
+  border: 1px solid rgba(0, 255, 255, 0.3);
+  border-radius: 8px;
+  padding: 20px;
+  backdrop-filter: blur(10px);
+  box-shadow: 
+    0 0 30px rgba(0, 255, 255, 0.2),
+    inset 0 0 30px rgba(0, 255, 255, 0.1);
+  animation: hologramFlicker 4s ease-in-out infinite;
+  overflow: visible; /* УБЕДИТЕСЬ ЧТО ЗДЕСЬ visible */
+  font-family: 'Courier New', monospace;
+  color: #00ffff;
+  text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* Голографическое свечение */
+.holographicGlow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(
+      circle at 30% 30%,
+      rgba(0, 255, 255, 0.1) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      circle at 70% 70%,
+      rgba(0, 100, 255, 0.1) 0%,
+      transparent 50%
+    );
+  animation: glowMove 8s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* Контент панели */
+.panelContent {
+  position: relative;
+  z-index: 2;
+}
+
+/* Заголовок */
+.panelHeader {
+  position: relative;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(0, 255, 255, 0.3);
+}
+
+.panelTitle {
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: 300;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  animation: textFlicker 3s ease-in-out infinite;
+}
+
+.titleGlow {
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    transparent
+  );
+  animation: titleScan 2s linear infinite;
+}
+
+/* Тело панели */
+.panelBody {
+  position: relative;
+  line-height: 1.6;
+}
+
+/* Линии сканирования */
+.scanLine {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(0, 255, 255, 0.8),
+    transparent
+  );
+  animation: scan 3s linear infinite;
+  z-index: 3;
+}
+
+.scanLine2 {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(0, 200, 255, 0.4),
+    transparent
+  );
+  animation: scan2 4s linear infinite;
+  z-index: 3;
+}
+
+/* Угловые акценты */
+.corner, .corner2, .corner3, .corner4 {
+  position: absolute;
+  width: 15px;
+  height: 15px;
+  border: 1px solid #00ffff;
+  animation: cornerPulse 2s ease-in-out infinite;
+}
+
+.corner {
+  top: 5px;
+  left: 5px;
+  border-right: none;
+  border-bottom: none;
+}
+
+.corner2 {
+  top: 5px;
+  right: 5px;
+  border-left: none;
+  border-bottom: none;
+}
+
+.corner3 {
+  bottom: 5px;
+  left: 5px;
+  border-right: none;
+  border-top: none;
+}
+
+.corner4 {
+  bottom: 5px;
+  right: 5px;
+  border-left: none;
+  border-top: none;
+}
+
+/* Голографические частицы */
+.holoParticles {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+}
+
+.particle {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  background: #00ffff;
+  border-radius: 50%;
+  animation: particleFloat 3s ease-in-out infinite;
+  box-shadow: 0 0 6px rgba(0, 255, 255, 0.8);
+}
+
+/* Анимации */
+@keyframes hologramFlicker {
+  0%, 100% {
+    opacity: 1;
+    box-shadow: 
+      0 0 30px rgba(0, 255, 255, 0.2),
+      inset 0 0 30px rgba(0, 255, 255, 0.1);
+  }
+  50% {
+    opacity: 0.95;
+    box-shadow: 
+      0 0 35px rgba(0, 255, 255, 0.3),
+      inset 0 0 35px rgba(0, 255, 255, 0.15);
+  }
+  75% {
+    opacity: 0.98;
+    box-shadow: 
+      0 0 25px rgba(0, 255, 255, 0.25),
+      inset 0 0 25px rgba(0, 255, 255, 0.12);
+  }
+}
+
+@keyframes glowMove {
+  0%, 100% {
+    opacity: 0.3;
+    transform: translate(0, 0);
+  }
+  25% {
+    opacity: 0.5;
+    transform: translate(5px, -5px);
+  }
+  50% {
+    opacity: 0.4;
+    transform: translate(-3px, 3px);
+  }
+  75% {
+    opacity: 0.6;
+    transform: translate(2px, -2px);
+  }
+}
+
+@keyframes textFlicker {
+  0%, 100% {
+    opacity: 1;
+    text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+  }
+  50% {
+    opacity: 0.8;
+    text-shadow: 0 0 15px rgba(0, 255, 255, 0.7);
+  }
+  25%, 75% {
+    opacity: 0.9;
+    text-shadow: 0 0 12px rgba(0, 255, 255, 0.6);
+  }
+}
+
+@keyframes scan {
+  0% {
+    transform: translateY(0);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+}
+
+@keyframes scan2 {
+  0% {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  50% {
+    opacity: 0.5;
+  }
+  100% {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+}
+
+@keyframes titleScan {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes cornerPulse {
+  0%, 100% {
+    opacity: 0.7;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes particleFloat {
+  0%, 100% {
+    transform: translate(0, 0);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  50% {
+    transform: translate(10px, -10px);
+  }
+}
+
+/* Эффекты для текста внутри панели */
+.holographicPanel p {
+  margin: 10px 0;
+  animation: textGlow 4s ease-in-out infinite;
+}
+
+.holographicPanel strong {
+  color: #00ff88;
+  text-shadow: 0 0 8px rgba(0, 255, 136, 0.6);
+}
+
+.holographicPanel code {
+  background: rgba(0, 255, 255, 0.1);
+  padding: 2px 6px;
+  border-radius: 3px;
+  border: 1px solid rgba(0, 255, 255, 0.3);
+  font-family: 'Courier New', monospace;
+}
+
+@keyframes textGlow {
+  0%, 100% {
+    opacity: 0.9;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.holographicPanel {
+  position: relative;
+  background: rgba(0, 20, 40, 0.7);
+  border: 1px solid rgba(100, 200, 255, 0.3);
+  border-radius: 12px;
+  padding: 0;
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+}
+
+.panelContent {
+  position: relative;
+  z-index: 2;
+  padding: 20px;
+}
+
+.panelHeader {
+  position: relative;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.panelTitle {
+  color: #00f0ff;
+  font-size: 1.5em;
+  font-weight: 600;
+  text-shadow: 0 0 10px rgba(0, 240, 255, 0.7);
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.panelBody {
+  color: #e0f7ff;
+}
+
+/* Стили для форм внутри панели */
+.formGroup {
+  margin-bottom: 15px;
+}
+
+.formLabel {
+  display: block;
+  color: #88e1ff;
+  margin-bottom: 5px;
+  font-weight: 500;
+  text-shadow: 0 0 5px rgba(136, 225, 255, 0.5);
+}
+
+.formInput {
+  width: 100%;
+  padding: 10px 12px;
+  background: rgba(0, 30, 60, 0.6);
+  border: 1px solid rgba(100, 200, 255, 0.4);
+  border-radius: 6px;
+  color: #ffffff;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+.formInput:focus {
+  outline: none;
+  border-color: #00f0ff;
+  box-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
+  background: rgba(0, 40, 80, 0.7);
+}
+
+.formButton {
+  background: linear-gradient(135deg, #00a8ff, #0097e6);
+  border: none;
+  border-radius: 6px;
+  color: white;
+  padding: 12px 24px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.formButton:hover {
+  background: linear-gradient(135deg, #0097e6, #0088cc);
+  box-shadow: 0 0 15px rgba(0, 168, 255, 0.4);
+  transform: translateY(-1px);
+}

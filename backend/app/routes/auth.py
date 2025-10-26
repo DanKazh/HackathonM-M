@@ -125,3 +125,4 @@ async def check_auth(
         user_id=current_user["user_id"],
         username=current_user["username"]
     )
+

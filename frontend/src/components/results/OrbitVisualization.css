@@ -1,32 +1,87 @@
-.orbit-visualization {
-  background: linear-gradient(135deg, #0c1445 0%, #1a237e 100%);
-  border-radius: 10px;
-  height: 300px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  margin: 20px 0;
-  border: 2px solid #3949ab;
+.orbit-visualization-panel {
+  margin: 20px auto;
 }
 
-.visualization-content {
+.orbit-visualization-panel .panelBody {
+  padding: 0;
+}
+
+.animation-container {
+  padding: 20px;
   text-align: center;
 }
 
-.icon {
-  font-size: 3rem;
+.animation-container h4 {
+  color: #00f0ff;
   margin-bottom: 15px;
-  animation: float 3s ease-in-out infinite;
+  text-shadow: 0 0 10px rgba(0, 240, 255, 0.7);
 }
 
-@keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-10px); }
+.image-wrapper {
+  background: rgba(0, 20, 40, 0.5);
+  border-radius: 8px;
+  padding: 10px;
+  margin: 15px 0;
+  border: 1px solid rgba(100, 200, 255, 0.3);
+}
+
+.orbit-gif {
+  max-width: 100%;
+  height: auto;
+  border-radius: 4px;
+  box-shadow: 0 0 20px rgba(0, 240, 255, 0.3);
+}
+
+.animation-description {
+  color: #88e1ff;
+  font-size: 14px;
+  margin-top: 10px;
+  text-shadow: 0 0 5px rgba(136, 225, 255, 0.5);
+}
+
+.visualization-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 40px 20px;
+  text-align: center;
+}
+
+.visualization-content .icon {
+  font-size: 4em;
+  margin-bottom: 20px;
+  filter: drop-shadow(0 0 10px rgba(0, 240, 255, 0.5));
+}
+
+.placeholder-text {
+  color: #00f0ff;
+  font-size: 1.2em;
+  margin-bottom: 10px;
+  text-shadow: 0 0 10px rgba(0, 240, 255, 0.7);
 }
 
 .hint {
-  font-size: 0.9rem;
+  color: #88e1ff;
+  font-size: 0.9em;
   opacity: 0.8;
-  margin-top: 10px;
+  max-width: 250px;
+  line-height: 1.4;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+  .orbit-visualization-panel {
+    width: 100% !important;
+    max-width: 400px;
+  }
+  
+  .visualization-content {
+    padding: 30px 15px;
+  }
+  
+  .visualization-content .icon {
+    font-size: 3em;
+  }
 }

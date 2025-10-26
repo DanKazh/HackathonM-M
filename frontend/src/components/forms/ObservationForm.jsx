@@ -75,7 +75,7 @@ function ObservationForm({ onSubmit }) {
         placeholder="Например: 12.3456"
         step="0.0001"
         min="0"
-        max="360"
+        max="270"
         error={errors.ra}
         required
       />

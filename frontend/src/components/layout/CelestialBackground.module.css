@@ -1,0 +1,196 @@
+.background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  overflow: hidden;
+}
+
+/* Градиент небосвода */
+.skyGradient {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    135deg,
+    #0c1445 0%,
+    #1a237e 25%,
+    #283593 50%,
+    #1a237e 75%,
+    #0c1445 100%
+  );
+}
+
+/* Контейнер для звезд */
+.starsContainer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* Звезды */
+.star {
+  position: absolute;
+  background: #ffffff;
+  border-radius: 50%;
+  animation: twinkle var(--duration, 3s) ease-in-out infinite var(--delay, 0s);
+}
+
+/* Контейнер для комет */
+.cometsContainer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* Комета */
+.comet {
+  position: absolute;
+  top: var(--startY);
+  left: var(--startX);
+  animation: cometMove var(--duration) linear infinite var(--delay);
+  animation-fill-mode: both;
+}
+
+/* Голова кометы */
+.cometHead {
+  width: var(--size);
+  height: var(--size);
+  background: var(--color);
+  border-radius: 50%;
+  box-shadow: 
+    0 0 calc(var(--size) * 2) calc(var(--size) * 1.5) var(--color),
+    0 0 calc(var(--size) * 4) calc(var(--size) * 2) rgba(255, 255, 255, 0.3);
+  filter: blur(0.5px);
+}
+
+/* Хвост кометы */
+.cometTail {
+  position: absolute;
+  top: 50%;
+  left: calc(var(--size) * -2);
+  width: calc(var(--size) * 8);
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--color) 30%,
+    rgba(255, 255, 255, 0.8) 50%,
+    transparent 100%
+  );
+  transform: translateY(-50%);
+  filter: blur(1px);
+}
+
+/* Туманности */
+.nebula1, .nebula2, .nebula3 {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(60px);
+  opacity: 0.1;
+  animation: nebulaFloat 20s ease-in-out infinite;
+}
+
+.nebula1 {
+  top: 20%;
+  left: 10%;
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, #7c4dff, transparent 70%);
+  animation-delay: 0s;
+}
+
+.nebula2 {
+  top: 60%;
+  left: 70%;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, #ff4081, transparent 70%);
+  animation-delay: -7s;
+}
+
+.nebula3 {
+  top: 80%;
+  left: 30%;
+  width: 250px;
+  height: 250px;
+  background: radial-gradient(circle, #18ffff, transparent 70%);
+  animation-delay: -14s;
+}
+
+/* Анимации */
+@keyframes twinkle {
+  0%, 100% {
+    opacity: 0.3;
+    transform: scale(0.8);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.2);
+  }
+}
+
+@keyframes cometMove {
+  0% {
+    transform: translate(0, 0);
+    opacity: 0;
+  }
+  1% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate(
+      calc(var(--endX) - var(--startX)),
+      calc(var(--endY) - var(--startY))
+    );
+    opacity: 0;
+  }
+}
+
+@keyframes nebulaFloat {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.1;
+  }
+  33% {
+    transform: translate(20px, -10px) scale(1.1);
+    opacity: 0.15;
+  }
+  66% {
+    transform: translate(-15px, 15px) scale(0.9);
+    opacity: 0.08;
+  }
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+  .nebula1, .nebula2, .nebula3 {
+    filter: blur(40px);
+  }
+  
+  .nebula1 {
+    width: 200px;
+    height: 200px;
+  }
+  
+  .nebula2 {
+    width: 250px;
+    height: 250px;
+  }
+  
+  .nebula3 {
+    width: 180px;
+    height: 180px;
+  }
+}

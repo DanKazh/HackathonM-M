@@ -61,3 +61,20 @@ class CalculationResponse(BaseModel):
     min_distance_au: float
     closest_approach_time: datetime
     saved_at: datetime
+
+class SavedCalculation(BaseModel):
+    calculation_id: UUID
+    group_id: UUID
+    group_name: Optional[str] = None
+    group_description: Optional[str] = None
+    min_distance_km: float
+    min_distance_au: float
+    closest_approach_time: datetime
+    observation_count: int
+    saved_at: datetime
+    observer_name: Optional[str] = None
+
+class UserCalculationsResponse(BaseModel):
+    """Модель ответа со списком расчетов пользователя"""
+    calculations: List[SavedCalculation]
+    total_count: int

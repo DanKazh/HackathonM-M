@@ -1,41 +1,47 @@
 import React from 'react';
-import Card from '../common/Card';
-import ResultCard from './ResultCard';
-import OrbitVisualization from './OrbitVisualization';
-import './OrbitResults.css';
+import HolographicPanel from '../common/HolographicPanel'; // Или правильный путь
+import './OrbitVisualization.css';
 
-function OrbitResults({ data }) {
-  return (
-    <Card title="Визуализация и результаты">
-      <OrbitVisualization />
-      
-      {data ? (
-        <div className="orbit-results">
-          <h3>Орбитальные элементы</h3>
-          <div className="results-grid">
-            <ResultCard
-              label="Большая полуось"
-              value={data.semiMajorAxis}
-              unit="а.е."
-            />
-            <ResultCard
-              label="Эксцентриситет"
-              value={data.eccentricity}
-            />
-            <ResultCard
-              label="Наклонение"
-              value={data.inclination}
-              unit="°"
+function OrbitVisualization({ orbitAnimation }) {
+  if (orbitAnimation) {
+    return (
+      <HolographicPanel 
+        title="Визуализация орбиты"
+        width="500px"
+        height="auto"
+        className="orbit-visualization-panel"
+      >
+        <div className="animation-container">
+          <div className="image-wrapper">
+            <img 
+              src={`data:image/gif;base64,${orbitAnimation}`} 
+              alt="Анимация орбиты кометы"
+              className="orbit-gif"
             />
           </div>
+          <p className="animation-description">
+            Траектория движения кометы относительно Земли
+          </p>
         </div>
-      ) : (
-        <div className="empty-results">
-          <p>Добавьте наблюдения и нажмите "Рассчитать орбиту"</p>
-        </div>
-      )}
-    </Card>
+      </HolographicPanel>
+    );
+  }
+
+  // Если анимации нет
+  return (
+    <HolographicPanel 
+      title="Визуализация орбиты"
+      width="400px"
+      height="300px"
+      className="orbit-visualization-panel empty"
+    >
+      <div className="visualization-content">
+        <div className="icon">🌌</div>
+        <p className="placeholder-text">Ожидание данных</p>
+        <p className="hint">Здесь будет отображаться расчетная орбита кометы</p>
+      </div>
+    </HolographicPanel>
   );
 }
 
-export default OrbitResults;
+export default OrbitVisualization;
