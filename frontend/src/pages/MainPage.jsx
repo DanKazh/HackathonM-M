@@ -8,7 +8,7 @@ import StatusMessage from '../components/common/StatusMessage';
 import { useObservations } from '../hooks/useObservations';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 import { useOrbitCalculation } from '../hooks/useOrbitCalculation';
-import { calculateOrbit } from '../services/cometService';
+import { cometService } from '../services/cometService'; // ← Импортируем объект cometService
 import './MainPage.css';
 import ObservationList from '../components/observations/ObservationList';
 
@@ -19,7 +19,17 @@ function MainPage() {
   // Передаем сохраненные наблюдения в useObservations
   const { observations, addObservation, updateObservation, deleteObservation, clearObservations } = useObservations(storedObservations);
   
-  const { loading, orbitData, closeApproachData, updateOrbitData, setLoading } = useOrbitCalculation();
+  // Используем обновленный хук с новыми методами
+  const { 
+    loading, 
+    generatingAnimation,
+    orbitData, 
+    closeApproachData,
+    orbitAnimation,
+    calculateOrbit,
+    generateAnimation 
+  } = useOrbitCalculation();
+  
   const [status, setStatus] = useState(null);
 
   // Сохраняем наблюдения в localStorage при изменении
@@ -27,41 +37,23 @@ function MainPage() {
     setStoredObservations(observations);
   }, [observations, setStoredObservations]);
 
-  // Функция для преобразования closeApproachData
-  const getProcessedCloseApproachData = () => {
-    if (!closeApproachData) return null;
-    
-    // Если closeApproachData - массив из трех элементов
-    if (Array.isArray(closeApproachData) && closeApproachData.length === 3) {
-      return [
-        new Date(closeApproachData[0]), // Первый элемент преобразуем в Date
-        closeApproachData[1],           // Второй элемент без изменений
-        closeApproachData[2]            // Третий элемент без изменений
-      ];
-    }
-    
-    return closeApproachData;
-  };
-
-  const processedCloseApproachData = getProcessedCloseApproachData();
-
   const handleCalculate = async (observations) => {
-    try {
-      setLoading(true);
-      setStatus({ message: 'Выполняется расчет орбиты...', type: 'info' });
-
-      const result = await calculateOrbit(observations);
-
-      updateOrbitData(result);
-
-      setStatus({ message: 'Расчет орбиты завершен!', type: 'success' });
-    } catch (error) {
-      setStatus({ message: 'Ошибка при расчете орбиты', type: 'error' });
-      console.error('Calculation error:', error);
-    } finally {
-      setLoading(false);
+  try {
+    // 1. Сначала рассчитываем орбиту
+    const orbitResult = await calculateOrbit(observations);
+    console.log('✅ Orbit calculation completed:', orbitResult);
+    
+    // 2. Затем генерируем анимацию на основе данных орбиты
+    if (orbitResult) {
+      console.log('🎬 Starting animation generation...');
+      await generateAnimation(orbitResult, observations);
     }
-  };
+    
+  } catch (error) {
+    console.error('Calculation error:', error);
+    // Обработка ошибки
+  }
+};
 
   const handleSave = () => {
     setStatus({ message: 'Результаты сохранены', type: 'success' });
@@ -71,7 +63,8 @@ function MainPage() {
     const data = {
       observations,
       orbitData,
-      closeApproachData: processedCloseApproachData
+      closeApproachData,
+      orbitAnimation
     };
     
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
@@ -103,20 +96,22 @@ function MainPage() {
             onUpdateObservation={updateObservation}
             onDeleteObservation={deleteObservation}
             onClearObservations={clearObservations}
-            onCalculate={handleCalculate} 
+            onCalculateOrbit={handleCalculate} // ← обновили проп
+            onGenerateAnimation={generateAnimation} // ← добавили новый проп
+            calculating={loading}
+            generatingAnimation={generatingAnimation}
           />
         </div>
 
         <CombinedResults
-          data={orbitData} // здесь находится orbit_animation
-          approachData={closeApproachData} // здесь только данные сближения
+          data={orbitData}
+          approachData={closeApproachData}
+          orbitAnimation={orbitAnimation} // ← передаем отдельно анимацию
           loading={loading}
           onSave={handleSave}
           onExport={handleExport}
         />
       </div>
-
-     
     </div>
   );
 }

@@ -93,7 +93,6 @@ class OrbitVisualizer:
             ax.set_xlabel('X (AU)')
             ax.set_ylabel('Y (AU)')
             ax.set_zlabel('Z (AU)')
-            ax.set_title(f'Орбиты объекта и Земли\nМин. расстояние: {min_distance_au:.3f} AU')
 
             ax.plot(earth_orbit[:, 0], earth_orbit[:, 1], earth_orbit[:, 2], 'b-', alpha=0.3, label='Орбита Земли')
             ax.plot(object_orbit[:, 0], object_orbit[:, 1], object_orbit[:, 2], 'r-', alpha=0.3, label='Орбита объекта')
@@ -146,7 +145,7 @@ class OrbitVisualizer:
         finally:
             if fig is not None:
                 plt.close(fig)  # Гарантированно закрываем фигуру
-                
+
     def _position_from_elements(
         self,
         a: float,

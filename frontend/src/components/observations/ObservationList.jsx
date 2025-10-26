@@ -8,7 +8,10 @@ const ObservationList = ({
   onUpdateObservation, 
   onDeleteObservation, 
   onClearObservations, 
-  onCalculate 
+  onCalculateOrbit,
+  onGenerateAnimation,
+  calculating = false,
+  generatingAnimation = false
 }) => {
   const [deletingId, setDeletingId] = useState(null);
   const [rearrangingIds, setRearrangingIds] = useState([]);
@@ -18,31 +21,31 @@ const ObservationList = ({
   const handleDelete = (id) => {
     setDeletingId(id);
     
-    // Находим индекс удаляемой строки
     const deleteIndex = observations.findIndex(obs => obs.id === id);
-    
-    // Определяем какие строки нужно анимировать (все что ниже удаляемой)
     const rowsToRearrange = observations
       .slice(deleteIndex + 1)
       .map(obs => obs.id);
     
     setRearrangingIds(rowsToRearrange);
     
-    // Анимация смахивания
     setTimeout(() => {
       onDeleteObservation(id);
       setDeletingId(null);
       
-      // Убираем класс перестроения после завершения анимации
       setTimeout(() => {
         setRearrangingIds([]);
       }, 600);
     }, 400);
   };
 
-  const handleCalculateOrbit = () => {
-    if (canCalculate) {
-      onCalculate(observations);
+  const handleCalculateOrbit = async () => {
+    if (canCalculate && !calculating) {
+      const result = await onCalculateOrbit(observations);
+      
+      // Если расчет успешен и есть calculation_id, запускаем генерацию анимации
+      if (result && result.calculation_id && onGenerateAnimation) {
+        await onGenerateAnimation(result.calculation_id, observations);
+      }
     }
   };
 
@@ -110,7 +113,7 @@ const ObservationList = ({
                         <button 
                           className={styles.deleteBtn}
                           onClick={() => handleDelete(obs.id)}
-                          disabled={deletingId}
+                          disabled={deletingId || calculating}
                         >
                           Удалить
                         </button>
@@ -123,18 +126,31 @@ const ObservationList = ({
 
             <div className={styles.footer}>
               <button 
-                className={styles.calculateBtn} 
+                className={`${styles.calculateBtn} ${calculating ? styles.loading : ''}`} 
                 onClick={handleCalculateOrbit}
-                disabled={!canCalculate}
+                disabled={!canCalculate || calculating}
               >
-                {canCalculate 
-                  ? 'Рассчитать орбиту' 
-                  : `Нужно ещё ${MIN_OBSERVATIONS - observations.length} наблюдений`}
+                {calculating ? (
+                  <>
+                    <div className={styles.spinner}></div>
+                    Расчет орбиты...
+                  </>
+                ) : generatingAnimation ? (
+                  <>
+                    <div className={styles.spinner}></div>
+                    Генерация анимации...
+                  </>
+                ) : canCalculate ? (
+                  'Рассчитать орбиту'
+                ) : (
+                  `Нужно ещё ${MIN_OBSERVATIONS - observations.length} наблюдений`
+                )}
               </button>
+              
               <button 
                 className={styles.clearBtn}
                 onClick={onClearObservations}
-                disabled={observations.length === 0}
+                disabled={observations.length === 0 || calculating}
               >
                 Очистить все
               </button>

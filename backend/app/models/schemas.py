@@ -62,12 +62,15 @@ class CloseApproachResponse(BaseModel):
     eks: float = Field(..., description="Эксцентриситет орбиты")
     i: float = Field(..., description="Наклонение орбиты")
     calculation_id: str = Field(..., description="ID расчета")
-    orbit_animation: str = Field("", description="Анимация орбиты в base64")
+    orbit_animation: Optional[str] = Field(None, description="Анимация орбиты в base64")
+
+class OrbitAnimationResponse(BaseModel):
+    orbit_animation: Optional[str] = Field(None, description="Анимация орбиты в base64")
+    status: str = Field(..., description="Статус генерации анимации")
+    error_message: Optional[str] = Field(None, description="Сообщение об ошибке")
 
 class ErrorResponse(BaseModel):
     detail: str
-    error_code: str = None
-
 
 class SaveCalculationRequest(ObservationRequest):
     """Модель для запроса расчета с сохранением"""
