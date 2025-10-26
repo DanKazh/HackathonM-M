@@ -1,4 +1,53 @@
-.status-message { padding: 15px; border-radius: 8px; margin: 10px 0; display: flex; justify-content: space-between; font-weight: 600; }
-.status-success { background: #e8f5e8; color: #2e7d32; border: 1px solid #c8e6c9; }
-.status-error { background: #ffebee; color: #c62828; border: 1px solid #ffcdd2; }
-.status-info { background: #e3f2fd; color: #1565c0; border: 1px solid #bbdefb; }
+.status-message {
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 500;
+}
+
+.status-info {
+  background: rgba(33, 150, 243, 0.2);
+  border: 1px solid rgba(33, 150, 243, 0.5);
+  color: #90caf9;
+}
+
+.status-success {
+  background: rgba(76, 175, 80, 0.2);
+  border: 1px solid rgba(76, 175, 80, 0.5);
+  color: #a5d6a7;
+}
+
+.status-error {
+  background: rgba(244, 67, 54, 0.2);
+  border: 1px solid rgba(244, 67, 54, 0.5);
+  color: #ef9a9a;
+}
+
+.status-warning {
+  background: rgba(255, 152, 0, 0.2);
+  border: 1px solid rgba(255, 152, 0, 0.5);
+  color: #ffcc80;
+}
+
+.status-close {
+  background: none;
+  border: none;
+  color: inherit;
+  font-size: 18px;
+  cursor: pointer;
+  padding: 0;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background 0.3s;
+}
+
+.status-close:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
