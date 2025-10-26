@@ -1,9 +1,9 @@
 # auth.py
 from fastapi import APIRouter, HTTPException, status, Response, Depends
-from models.schemas import UserRegister, UserLogin, UserResponse, TokenResponse
+from models.schemas import UserRegister, UserLogin, UserResponse, TokenResponse, TokenVerifyResponse
 from repo.database.database import PostgresDB 
 from dependencies import get_database, get_current_user  
-from routes.security import (  # Импортируем из security.py
+from routes.security import (
     verify_password, 
     get_password_hash, 
     create_access_token,
@@ -96,5 +96,16 @@ async def get_current_user_info(
     """Получение информации о текущем пользователе"""
     return UserResponse(
         id=current_user["user_id"],
+        username=current_user["username"]
+    )
+
+@router.get("/check", response_model=TokenVerifyResponse)
+async def check_auth(
+    current_user: dict = Depends(get_current_user)
+):
+    """Проверка валидности токена"""
+    return TokenVerifyResponse(
+        valid=True,
+        user_id=current_user["user_id"],
         username=current_user["username"]
     )

@@ -1,11 +1,9 @@
+from pydantic import BaseModel
+from uuid import UUID
 from pydantic import BaseModel, Field
 from datetime import datetime
 from typing import List
-from pydantic import BaseModel, EmailStr
-from typing import Optional
-from uuid import UUID
 
-# Модели для запросов
 class UserRegister(BaseModel):
     username: str
     password: str
@@ -20,12 +18,14 @@ class UserResponse(BaseModel):
 
 class TokenResponse(BaseModel):
     access_token: str
-    token_type: str = "bearer"
+    token_type: str
+    user_id: UUID
+    username: str
 
-# Модели для JWT
-class TokenData(BaseModel):
-    username: Optional[str] = None
-    user_id: Optional[int] = None
+class TokenVerifyResponse(BaseModel):
+    valid: bool
+    user_id: UUID
+    username: str
 
 class ObservationPoint(BaseModel):
     timestamp: datetime
