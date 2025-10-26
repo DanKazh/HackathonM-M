@@ -1,3 +1,4 @@
+# database.py
 import os
 import asyncpg
 from typing import Optional, List, Any
@@ -73,20 +74,20 @@ class Database:
 
 class DatabaseConfig(BaseConfig):
     """Конфигурация базы данных"""
-    db_host: str = "localhost"
-    db_port: int = 5432
-    db_name: str = os.getenv("POSTGRES_DB")
-    db_user: str = os.getenv("POSTGRES_USER")
-    db_password: str = os.getenv("POSTGRES_PASS")
+    db_host: str = os.getenv("DB_HOST", "localhost")
+    db_port: int = int(os.getenv("DB_PORT", "5432"))
+    db_name: str = os.getenv("POSTGRES_DB", "comet_db")
+    db_user: str = os.getenv("POSTGRES_USER", "postgres")
+    db_password: str = os.getenv("POSTGRES_PASS", "password")
     
     class Config:
         env_file = ".env"
 
     @property
     def dsn(self) -> str:
-        """Формирование DSN строки"""
+        """Формирование DSN строки для asyncpg"""
         return f"postgresql://{self.db_user}:{self.db_password}@{self.db_host}:{self.db_port}/{self.db_name}"
-
+    
 class PostgresDB(Database):
     def __init__(self, config: Optional[DatabaseConfig] = None):
         self.config = config or DatabaseConfig()
@@ -100,3 +101,6 @@ class PostgresDB(Database):
                 return result == 1
         except Exception:
             return False
+
+# Global database instance
+db = PostgresDB()
