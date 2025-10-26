@@ -22,7 +22,6 @@ function OrbitVisualization({ orbitAnimation }) {
     );
   }
 
-  // Если анимации нет
   return (
     <div className="orbit-visualization">
       <div className="visualization-content">
