@@ -36,23 +36,32 @@ export const cometService = {
 const API_BASE_URL = 'http://localhost:8000';
 
 export const calculateOrbit = async (observations) => {
-  const response = await fetch(`${API_BASE_URL}/api/calculate`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      observations: observations.map(obs => [
-        obs.date,
-        parseFloat(obs.ra),
-        parseFloat(obs.dec)
-      ])
-    }),
-  });
+  console.log('Sending observations:', observations);
+  
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/calculate`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        observations: observations.map(obs => [
+          obs.date,           // timestamp как строка
+          parseFloat(obs.ra), // ra как число  
+          parseFloat(obs.dec) // dec как число
+        ])
+      }),
+    });
 
-  if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => null);
+      console.error('Server error:', errorData);
+      return { error: `HTTP error! status: ${response.status}`, details: errorData };
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Network error:', error);
+    return { error: 'Network error', details: error.message };
   }
-
-  return await response.json();
 };
