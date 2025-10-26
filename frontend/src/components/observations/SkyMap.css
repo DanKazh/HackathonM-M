@@ -1,0 +1,125 @@
+.sky-map-container {
+  padding: 0;
+  margin-top: 10px;
+}
+
+.sky-map-canvas {
+  width: 100%;
+  max-width: 800px;
+  height: 450px;
+  border: 2px solid #3949ab;
+  border-radius: 10px;
+  cursor: crosshair;
+  transition: all 0.3s ease;
+  display: block;
+  margin: 0 auto;
+  background: #0c1445;
+}
+
+.sky-map-canvas:hover {
+  border-color: #5c6bc0;
+  box-shadow: 0 0 20px rgba(57, 73, 171, 0.4);
+}
+
+.coordinates-preview {
+  background: rgba(255, 255, 255, 0.95);
+  padding: 20px;
+  border-radius: 10px;
+  margin: 15px auto;
+  max-width: 500px;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border: 2px solid #3949ab;
+}
+
+.coordinates-preview p {
+  margin: 8px 0;
+  color: #1a237e;
+}
+
+.coordinates-preview strong {
+  color: #3949ab;
+  font-size: 16px;
+}
+
+.coordinate-display {
+  margin: 15px 0;
+  padding: 10px;
+  background: #e8eaf6;
+  border-radius: 8px;
+}
+
+/* Одинаковый стиль для обоих полей ввода */
+.date-input-container,
+.timezone-select-container {
+  margin: 15px 0;
+  text-align: left;
+}
+
+/* Унифицированные стили для label */
+.date-input-container label,
+.timezone-label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+  font-size: 14px;
+  color: #1a237e;
+}
+
+/* Унифицированные стили для input и select */
+.date-input-container input,
+.timezone-select {
+  width: 100%;
+  padding: 10px 12px;
+  font-size: 14px;
+  font-family: inherit;
+  border: 1px solid #3949ab;
+  border-radius: 8px;
+  background-color: white;
+  color: #1a237e;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+}
+
+/* Одинаковый focus для обоих */
+.date-input-container input:focus,
+.timezone-select:focus {
+  outline: none;
+  border-color: #5c6bc0;
+  box-shadow: 0 0 0 3px rgba(57, 73, 171, 0.15);
+}
+
+/* Hover эффект */
+.date-input-container input:hover,
+.timezone-select:hover {
+  border-color: #5c6bc0;
+}
+
+.preview-buttons {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 15px;
+}
+
+.sky-map-info {
+  text-align: center;
+  margin-top: 15px;
+  color: #ffffff;
+}
+
+.sky-map-info p {
+  margin: 5px 0;
+  color: #ffffff;
+}
+
+@media (max-width: 768px) {
+  .sky-map-canvas {
+    height: 300px;
+  }
+  
+  .preview-buttons {
+    flex-direction: column;
+  }
+}
