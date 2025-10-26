@@ -1,4 +1,3 @@
-from pydantic import BaseModel
 from uuid import UUID
 from pydantic import BaseModel, Field
 from datetime import datetime
@@ -34,13 +33,36 @@ class ObservationPoint(BaseModel):
     dec_degrees: float = Field(..., ge=-90, le=90, description="Склонение в градусах")
 
 class ObservationRequest(BaseModel):
-    observations: List[List] = Field(..., description="Список наблюдений: [[timestamp, ra, dec], ...]")
+    observations: List[List[Union[str, float]]] = Field(
+        ..., 
+        description="Список наблюдений: [[timestamp, ra, dec], ...]",
+        min_items=3
+    )
+    
+    @validator('observations')
+    def validate_observation_format(cls, v):
+        for i, obs in enumerate(v):
+            if len(obs) != 3:
+                raise ValueError(f'Observation {i} must have exactly 3 elements: timestamp, ra, dec')
+            
+            if not isinstance(obs[0], str):
+                raise ValueError(f'Observation {i}: timestamp must be a string')
+            if not isinstance(obs[1], (int, float)):
+                raise ValueError(f'Observation {i}: ra must be a number')
+            if not isinstance(obs[2], (int, float)):
+                raise ValueError(f'Observation {i}: dec must be a number')
+                
+        return v
 
 class CloseApproachResponse(BaseModel):
     min_distance_km: float = Field(..., description="Минимальное расстояние от Земли в км")
     min_distance_au: float = Field(..., description="Минимальное расстояние от Земли в а.е.")
     closest_approach_time: datetime = Field(..., description="Время максимального сближения")
+    big_poluos: float = Field(..., description="Большая полуось орбиты")
+    eks: float = Field(..., description="Эксцентриситет орбиты")
+    i: float = Field(..., description="Наклонение орбиты")
     calculation_id: str = Field(..., description="ID расчета")
+    orbit_animation: str = Field("", description="Анимация орбиты в base64")
 
 class ErrorResponse(BaseModel):
     detail: str

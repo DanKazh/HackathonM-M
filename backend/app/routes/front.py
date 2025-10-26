@@ -19,7 +19,7 @@ from repo.database.database import PostgresDB
 import uuid
 
 router = APIRouter()
-calculation_service = OrbitCalculationService()
+api_service = ApiService()
 
 @router.post(
     "/calculate",
