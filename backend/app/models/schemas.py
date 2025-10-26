@@ -3,6 +3,7 @@ from datetime import datetime
 from typing import List
 from pydantic import BaseModel, EmailStr
 from typing import Optional
+from uuid import UUID
 
 # Модели для запросов
 class UserRegister(BaseModel):
@@ -14,7 +15,7 @@ class UserLogin(BaseModel):
     password: str
 
 class UserResponse(BaseModel):
-    id: int
+    id: UUID
     username: str
 
 class TokenResponse(BaseModel):

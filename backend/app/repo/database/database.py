@@ -76,9 +76,9 @@ class DatabaseConfig(BaseConfig):
     """Конфигурация базы данных"""
     db_host: str = os.getenv("DB_HOST", "localhost")
     db_port: int = int(os.getenv("DB_PORT", "5432"))
-    db_name: str = os.getenv("POSTGRES_DB", "comet_db")
+    db_name: str = os.getenv("POSTGRES_DB", "hackathon")
     db_user: str = os.getenv("POSTGRES_USER", "postgres")
-    db_password: str = os.getenv("POSTGRES_PASS", "password")
+    db_password: str = os.getenv("POSTGRES_PASS", "postgres")
     
     class Config:
         env_file = ".env"

@@ -44,7 +44,7 @@ async def register(
         username=user_data.username
     )
 
-@router.post("/login", response_model=TokenResponse)
+@router.post("/login", response_model=UserResponse)
 async def login(
     response: Response,
     user_data: UserLogin,
@@ -75,10 +75,13 @@ async def login(
         httponly=True,
         max_age=30 * 60,  # 30 минут
         secure=False,  # True в продакшене (HTTPS)
-        samesite="lax"
+        samesite="strict"
     )
     
-    return TokenResponse(access_token=access_token)
+    return UserResponse(
+        id=user["id"],  
+        username=user["login"]  
+    )
 
 @router.post("/logout")
 async def logout(response: Response):
