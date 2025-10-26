@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import HolographicPanel from '../common/HolographicPanel';
 import ResultCard from './ResultCard';
 import Button from '../common/Button';
 import { formatDate } from '../../utils/formatters';
 import OrbitVisualization from './OrbitVisualization';
+import EarthMoonSystem from '../common/EarthMoonSystem';
 import './CombinedResults.css';
 
 function CombinedResults({ 
@@ -14,34 +15,54 @@ function CombinedResults({
   orbitAnimation,
   approachData 
 }) {
+  const [animationLoading, setAnimationLoading] = useState(false);
+
+  // Отслеживаем загрузку анимации
+  useEffect(() => {
+    if (data?.orbit_animation) {
+      setAnimationLoading(false);
+    } else if (data && !data.orbit_animation) {
+      setAnimationLoading(true);
+    }
+  }, [data?.orbit_animation]);
+
+  // Общая загрузка (расчет орбиты)
   if (loading) {
     return (
       <HolographicPanel 
         title="Визуализация и результаты"
         width="500px"
         height="200px"
-        className="combined-results-panel loading"
+        className="combined-results-panel"
       >
-        <div className="loading-content">
-          <div className="loading-spinner"></div>
-          <p>Вычисление орбиты...</p>
-        </div>
+          <p>Расчет орбиты...</p>
+      
       </HolographicPanel>
     );
   }
 
+  // Загрузка анимации после расчета орбиты
+  const showAnimationLoading = animationLoading && data;
+
   return (
-    <div >
+    <div>
       {/* Основная панель с визуализацией и орбитальными элементами */}
       <HolographicPanel 
         title="Визуализация и результаты"
         width="500px"
         height="auto"
-        className="combined-results-panel loading"
+        className="combined-results-panel"
       >
         <div className="combined-content">
-          {/* Передаем анимацию из правильного источника */}
-          <OrbitVisualization orbitAnimation={data?.orbit_animation} />
+          {/* Показываем загрузку анимации или саму анимацию */}
+          {showAnimationLoading ? (
+            <div className="animation-loading">
+              <EarthMoonSystem/>
+              <p>Генерация анимации...</p>
+            </div>
+          ) : (
+            <OrbitVisualization orbitAnimation={data?.orbit_animation} />
+          )}
 
           {/* Орбитальные элементы */}
           {data && (
@@ -78,7 +99,6 @@ function CombinedResults({
           width="500px"
           height="auto"
           className="approach-results-panel"
-         
         >
           <div className="approach-content">
             <div className="approach-grid">

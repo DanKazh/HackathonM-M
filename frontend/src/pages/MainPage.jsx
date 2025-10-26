@@ -6,20 +6,22 @@ import StatusMessage from '../components/common/StatusMessage';
 import { useObservations } from '../hooks/useObservations';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 import { useOrbitCalculation } from '../hooks/useOrbitCalculation';
-import { useAuth } from '../hooks/useAuth';
+import { cometService } from '../services/cometService'; // ← Импортируем объект cometService
 import './MainPage.css';
 
 function MainPage() {
   const [storedObservations, setStoredObservations] = useLocalStorage('comet-observations', []);
   const { observations, addObservation, updateObservation, deleteObservation, clearObservations } = useObservations(storedObservations);
   
+  // Используем обновленный хук с новыми методами
   const { 
     loading, 
+    generatingAnimation,
     orbitData, 
-    closeApproachData, 
-    calculateOrbitWithAuth,
-    calculateOrbitWithSave,
-    isAuthenticated 
+    closeApproachData,
+    orbitAnimation,
+    calculateOrbit,
+    generateAnimation 
   } = useOrbitCalculation();
   
   const [status, setStatus] = useState(null);
@@ -103,9 +105,7 @@ function MainPage() {
     const data = {
       observations,
       orbitData,
-      closeApproachData: processedCloseApproachData,
-      calculatedAt: new Date().toISOString(),
-      isAuthenticated
+      closeApproachData: processedCloseApproachData
     };
     
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
@@ -137,15 +137,19 @@ function MainPage() {
             onUpdateObservation={updateObservation}
             onDeleteObservation={deleteObservation}
             onClearObservations={clearObservations}
-            onCalculate={handleCalculate} 
-            isAuthenticated={isAuthenticated}
+            onCalculateOrbit={handleCalculate} // ← обновили проп
+            onGenerateAnimation={generateAnimation} // ← добавили новый проп
+            calculating={loading}
+            generatingAnimation={generatingAnimation}
           />
         </div>
 
         <CombinedResults
           data={orbitData}
-          approachData={processedCloseApproachData}
-          onSave={handleCalculateAndSave}
+          approachData={closeApproachData}
+          orbitAnimation={orbitAnimation} // ← передаем отдельно анимацию
+          loading={loading}
+          onSave={handleSave}
           onExport={handleExport}
           isAuthenticated={isAuthenticated}
         />

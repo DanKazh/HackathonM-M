@@ -1,6 +1,7 @@
 from uuid import UUID
 from pydantic import BaseModel, Field
 from datetime import datetime
+<<<<<<< HEAD
 from typing import Optional
 from typing import List
 
@@ -26,6 +27,12 @@ class TokenVerifyResponse(BaseModel):
     valid: bool
     user_id: UUID
     username: str
+=======
+from typing import List, Union
+from pydantic import BaseModel, Field, validator
+from datetime import datetime
+from typing import List, Union, Optional
+>>>>>>> remotes/origin/dev/Babuleh78
 
 class ObservationPoint(BaseModel):
     timestamp: datetime
@@ -62,7 +69,12 @@ class CloseApproachResponse(BaseModel):
     eks: float = Field(..., description="Эксцентриситет орбиты")
     i: float = Field(..., description="Наклонение орбиты")
     calculation_id: str = Field(..., description="ID расчета")
-    orbit_animation: str = Field("", description="Анимация орбиты в base64")
+    orbit_animation: Optional[str] = Field(None, description="Анимация орбиты в base64")
+
+class OrbitAnimationResponse(BaseModel):
+    orbit_animation: Optional[str] = Field(None, description="Анимация орбиты в base64")
+    status: str = Field(..., description="Статус генерации анимации")
+    error_message: Optional[str] = Field(None, description="Сообщение об ошибке")
 
 class ErrorResponse(BaseModel):
     detail: str

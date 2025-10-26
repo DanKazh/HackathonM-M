@@ -51,7 +51,7 @@ app.add_middleware(
 )
 
 # Подключаем роуты
-app.include_router(calculation_router, prefix="/api", tags=["calculations"])
+app.include_router(calculation_router, prefix="/api")
 app.include_router(db_router, prefix="/db", tags=["database"])
 app.include_router(auth_router, tags=["auth"])
 
