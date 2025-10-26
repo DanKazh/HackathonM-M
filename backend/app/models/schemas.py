@@ -3,7 +3,31 @@ from datetime import datetime
 from typing import List, Union
 from pydantic import BaseModel, Field, validator
 from datetime import datetime
-from typing import List, Union, Optional
+from typing import List
+from pydantic import BaseModel, EmailStr
+from typing import Optional
+
+# Модели для запросов
+class UserRegister(BaseModel):
+    username: str
+    password: str
+
+class UserLogin(BaseModel):
+    username: str
+    password: str
+
+class UserResponse(BaseModel):
+    id: int
+    username: str
+
+class TokenResponse(BaseModel):
+    access_token: str
+    token_type: str = "bearer"
+
+# Модели для JWT
+class TokenData(BaseModel):
+    username: Optional[str] = None
+    user_id: Optional[int] = None
 
 class ObservationPoint(BaseModel):
     timestamp: datetime
