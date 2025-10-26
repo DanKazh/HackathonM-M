@@ -1,7 +1,7 @@
 from typing import List
 from models.schemas import ObservationPoint, CloseApproachResponse
 import uuid
-from orbital_core.calculator.orbitDetermination import OrbitDetermination
+from orbital_core.calculator.orbitDetermination import calculate_orbit
 from orbital_core.visualizer.orbitVisualizer import OrbitVisualizer
 from datetime import datetime
 import numpy as np
@@ -11,7 +11,7 @@ class OrbitCalculationService:
     """Сервис для расчета орбитальных параметров"""
     
     def __init__(self):
-        self.orbit_determination = OrbitDetermination()
+        # self.orbit_determination = OrbitDetermination()
         self.visualizer = OrbitVisualizer()
     
     async def calculate_min_distance(self, observations: List[ObservationPoint]) -> CloseApproachResponse:
@@ -23,7 +23,7 @@ class OrbitCalculationService:
             self._add_observations_to_determination(observations)
             
             # Расчёт орбитальных элементов
-            orbital_elements = self._calculate_orbital_elements()
+            orbital_elements = self._calculate_orbital_elements(observations)
             
             # Расчет минимального расстояния
             min_distance_au, closest_approach_time = self._calculate_min_earth_distance(orbital_elements)
@@ -50,9 +50,10 @@ class OrbitCalculationService:
                 obs.dec_degrees
             )
     
-    def _calculate_orbital_elements(self) -> List[float]:
+    def _calculate_orbital_elements(self, observations: List[ObservationPoint]) -> List[float]:
         """Вычисляет орбитальные элементы"""
-        orbital_elements = self.orbit_determination.find_best_solution()
+        observations_data = [[str(x.timestamp), x.ra_degrees, x.dec_degrees] for x in observations]
+        orbital_elements = calculate_orbit(observations_data)
         if orbital_elements is None:
             orbital_elements = self._get_fallback_orbit()
         return orbital_elements
