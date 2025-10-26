@@ -7,6 +7,20 @@ const api = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
+  withCredentials: true, // Важно для отправки куки
 });
+
+// Перехватчик для обработки ошибок
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      // Автоматический логаут при 401 ошибке
+      console.log('Authentication failed, logging out...');
+      // Можно добавить автоматический редирект на логин
+    }
+    return Promise.reject(error);
+  }
+);
 
 export default api;

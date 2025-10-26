@@ -1,6 +1,14 @@
-import React, { createContext, useState, useCallback } from 'react';
+import React, { createContext, useState, useCallback, useContext } from 'react';
 
-export const ObservationContext = createContext();
+const ObservationContext = createContext();
+
+export function useObservation() {
+  const context = useContext(ObservationContext);
+  if (!context) {
+    throw new Error('useObservation must be used within an ObservationProvider');
+  }
+  return context;
+}
 
 export function ObservationProvider({ children }) {
   const [observations, setObservations] = useState([]);
