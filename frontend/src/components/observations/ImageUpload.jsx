@@ -43,8 +43,6 @@ function ImageUpload({ onCoordinatesDetected }) {
         onClick={() => document.getElementById('file-input').click()}
       >
         <div className="upload-icon">📷</div>
-        <h3>Загрузите изображение</h3>
-        <p>Перетащите файл или кликните для выбора</p>
         <input
           id="file-input"
           type="file"
@@ -54,6 +52,9 @@ function ImageUpload({ onCoordinatesDetected }) {
           disabled={uploading}
         />
       </div>
+      
+        <h3>Загрузите изображение</h3>
+        <p>Перетащите файл или кликните для выбора</p>
 
       {message && (
         <StatusMessage

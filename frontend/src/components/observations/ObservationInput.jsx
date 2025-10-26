@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import Card from '../common/Card';
+import HolographicPanel from '../common/HolographicPanel'; // Импортируем новый компонент
 import Tabs from '../common/Tabs';
 import ObservationForm from '../forms/ObservationForm';
 import ImageUpload from './ImageUpload';
@@ -40,13 +40,18 @@ function ObservationInput({ onAddObservation }) {
   };
 
   return (
-    <Card title="Ввод наблюдений">
+    <HolographicPanel 
+      title="Ввод наблюдений"
+      width="600px" // Можете настроить по необходимости
+      height="auto"
+      className="observation-holographic-panel" // Дополнительный класс для кастомных стилей
+    >
       <Tabs tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
 
       {activeTab === 'manual' && <ObservationForm onSubmit={handleFormSubmit} />}
       {activeTab === 'image' && <ImageUpload onCoordinatesDetected={handleCoordinatesDetected} />}
       {activeTab === 'sky-map' && <SkyMap onPointSelected={handlePointSelected} />}
-    </Card>
+    </HolographicPanel>
   );
 }
 

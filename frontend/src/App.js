@@ -4,12 +4,15 @@ import Header from './components/layout/Header';
 import Footer from './components/layout/Footer';
 import Container from './components/layout/Container';
 import MainPage from './pages/MainPage';
+import CelestialBackground from './components/layout/CelestialBackground';
 import './App.css';
 
 function App() {
   return (
+    
     <AppProvider>
-      <div className="app">
+           <CelestialBackground />
+      <div>
         <Header />
         <Container>
           <MainPage />

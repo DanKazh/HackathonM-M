@@ -106,12 +106,12 @@
 .sky-map-info {
   text-align: center;
   margin-top: 15px;
-  color: #1a237e;
+  color: #ffffff;
 }
 
 .sky-map-info p {
   margin: 5px 0;
-  color: #1a237e;
+  color: #ffffff;
 }
 
 @media (max-width: 768px) {

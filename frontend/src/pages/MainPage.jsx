@@ -3,6 +3,7 @@ import ObservationInput from '../components/observations/ObservationInput';
 import ObservationTable from '../components/observations/ObservationTable';
 import OrbitResults from '../components/results/OrbitResults';
 import CloseApproachResults from '../components/results/CloseApproachResults';
+import CombinedResults from '../components/results/CombinedResults';
 import StatusMessage from '../components/common/StatusMessage';
 import { useObservations } from '../hooks/useObservations';
 import { useLocalStorage } from '../hooks/useLocalStorage';
@@ -105,16 +106,16 @@ function MainPage() {
           />
         </div>
 
-        <div className="results-section">
-          <OrbitResults data={orbitData} loading={loading} />
-        </div>
-      </div>
-
-      <CloseApproachResults
-        data={processedCloseApproachData}
+      <CombinedResults
+        data={orbitData} // данные орбиты
+        approachData={processedCloseApproachData} 
+      
         onSave={handleSave}
         onExport={handleExport}
       />
+      </div>
+
+     
     </div>
   );
 }
