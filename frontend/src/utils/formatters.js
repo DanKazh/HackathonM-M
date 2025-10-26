@@ -9,6 +9,21 @@ export function formatDateTime(dateString) {
   });
 }
 
-export function formatNumber(num, decimals = 4) {
-  return parseFloat(num).toFixed(decimals);
+export function formatDate(dateString) {
+  const date = new Date(dateString);
+  const readyDate = date.toLocaleString('ru-RU', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit'
+  });
+  return readyDate;
+}
+
+export function formatDateFull(dateString) {
+  const date = new Date(dateString);
+  return date.toLocaleString('ru-RU', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  });
 }

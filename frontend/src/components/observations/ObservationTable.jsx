@@ -5,10 +5,20 @@ import { MIN_OBSERVATIONS } from '../../utils/constants';
 import { formatDateTime, formatNumber } from '../../utils/formatters';
 import './ObservationTable.css';
 
-function ObservationTable({ onCalculate }) {
-  const { observations, removeObservation, clearObservations } = useObservations();
-
+function ObservationTable({ 
+  observations, 
+  onUpdateObservation, 
+  onDeleteObservation, 
+  onClearObservations, 
+  onCalculate 
+}) {
   const canCalculate = observations.length >= MIN_OBSERVATIONS;
+
+  const handleCalculateClick = () => {
+    if (canCalculate) {
+      onCalculate(observations);
+    }
+  };
 
   return (
     <div className="observation-table-container">
@@ -47,7 +57,7 @@ function ObservationTable({ onCalculate }) {
                         <Button
                           variant="danger"
                           className="btn-small"
-                          onClick={() => removeObservation(obs.id)}
+                          onClick={() => onDeleteObservation(obs.id)}
                         >
                           Удалить
                         </Button>
@@ -63,14 +73,14 @@ function ObservationTable({ onCalculate }) {
           <div className="button-group">
             <Button
               variant="success"
-              onClick={onCalculate}
+              onClick={handleCalculateClick}
               disabled={!canCalculate}
             >
               {canCalculate 
                 ? 'Рассчитать орбиту' 
                 : `Нужно ещё ${MIN_OBSERVATIONS - observations.length} наблюдений`}
             </Button>
-            <Button variant="secondary" onClick={clearObservations}>
+            <Button variant="secondary" onClick={onClearObservations}>
               Очистить все
             </Button>
           </div>
